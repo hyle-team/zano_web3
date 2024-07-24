@@ -31,6 +31,7 @@ interface WalletCredentials {
     nonce: string;
     signature: string;
     publicKey: string;
+    address: string;
 }
 
 class ZanoWallet {
@@ -83,6 +84,10 @@ class ZanoWallet {
         }
     }
 
+    cleanWalletCredentials() {
+        this.setWalletCredentials(undefined);
+    }
+
     async connect() {
 
         if (this.params.beforeConnect) {
@@ -111,7 +116,7 @@ class ZanoWallet {
 
         const existingWallet = this.params.useLocalStorage ? this.getSavedWalletCredentials() : undefined;
 
-        if (existingWallet) {
+        if (existingWallet && existingWallet.address === walletData.address) {
             nonce = existingWallet.nonce;
             signature = existingWallet.signature;
             publicKey = existingWallet.publicKey;
@@ -175,7 +180,8 @@ class ZanoWallet {
                 this.setWalletCredentials({
                     publicKey,
                     signature,
-                    nonce
+                    nonce,
+                    address: walletData.address
                 });
             }
 
