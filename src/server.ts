@@ -1,94 +1,94 @@
-// import axios from 'axios';
+import axios from 'axios';
 
-// interface BaseAuthData {
-//     address: string;
-//     signature: string;
-//     message: string;
-// }
+interface BaseAuthData {
+    address: string;
+    signature: string;
+    message: string;
+}
 
-// interface AliasAuth extends BaseAuthData {
-//     alias: string;
-// }
+interface AliasAuth extends BaseAuthData {
+    alias: string;
+}
 
-// interface PkeyAuth extends BaseAuthData {
-//     pkey: string;
-// }
+interface PkeyAuth extends BaseAuthData {
+    pkey: string;
+}
 
-// type AuthData = AliasAuth | PkeyAuth;
-
-
-// interface ValidationParams {
-//     buff: string;
-//     sig: string;
-//     alias?: string;
-//     pkey?: string;
-// }
+type AuthData = AliasAuth | PkeyAuth;
 
 
-// async function validateWallet(rpcUrl: string, authData: AuthData) {
+interface ValidationParams {
+    buff: string;
+    sig: string;
+    alias?: string;
+    pkey?: string;
+}
 
-//     async function fetchZanoApi(method: string, params: any) {
-//         return await axios.post(
-//             rpcUrl, 
-//             {
-//                 "id": 0,
-//                 "jsonrpc": "2.0",
-//                 "method": method,
-//                 "params": params,
-//             }
-//         ).then(res => res.data);    
-//     }
 
-//     const { message, address, signature } = authData;
+async function validateWallet(rpcUrl: string, authData: AuthData) {
 
-//     const alias = (authData as AliasAuth).alias || undefined;
-//     const pkey = (authData as PkeyAuth).pkey || undefined;
+    async function fetchZanoApi(method: string, params: any) {
+        return await axios.post(
+            rpcUrl, 
+            {
+                "id": 0,
+                "jsonrpc": "2.0",
+                "method": method,
+                "params": params,
+            }
+        ).then(res => res.data);    
+    }
 
-//     if (!message || (!alias && !pkey) || !signature) {
-//         return false;
-//     }
+    const { message, address, signature } = authData;
 
-//     const validationParams: ValidationParams = {
-//         "buff": Buffer.from(message).toString("base64"),
-//         "sig": signature
-//     };
+    const alias = (authData as AliasAuth).alias || undefined;
+    const pkey = (authData as PkeyAuth).pkey || undefined;
 
-//     if (alias) {
-//         validationParams['alias'] = alias;
-//     } else {
-//         validationParams['pkey'] = pkey;
-//     }
+    if (!message || (!alias && !pkey) || !signature) {
+        return false;
+    }
 
-//     const response = await fetchZanoApi(
-//         'validate_signature', 
-//         validationParams
-//     );
+    const validationParams: ValidationParams = {
+        "buff": Buffer.from(message).toString("base64"),
+        "sig": signature
+    };
 
-//     const valid = response?.result?.status === 'OK';
+    if (alias) {
+        validationParams['alias'] = alias;
+    } else {
+        validationParams['pkey'] = pkey;
+    }
 
-//     if (!valid) {
-//         return false;
-//     }
+    const response = await fetchZanoApi(
+        'validate_signature', 
+        validationParams
+    );
 
-//     if (alias) {
-//         const aliasDetailsResponse = await fetchZanoApi(
-//             'get_alias_details', 
-//             {
-//                 "alias": alias,
-//             }
-//         );
+    const valid = response?.result?.status === 'OK';
+
+    if (!valid) {
+        return false;
+    }
+
+    if (alias) {
+        const aliasDetailsResponse = await fetchZanoApi(
+            'get_alias_details', 
+            {
+                "alias": alias,
+            }
+        );
     
-//         const aliasDetails = aliasDetailsResponse?.result?.alias_details;
-//         const aliasAddress = aliasDetails?.address;
+        const aliasDetails = aliasDetailsResponse?.result?.alias_details;
+        const aliasAddress = aliasDetails?.address;
     
-//         const addressValid = !!aliasAddress && aliasAddress === address;
+        const addressValid = !!aliasAddress && aliasAddress === address;
 
-//         if (!addressValid) {
-//             return false;
-//         }
-//     }
+        if (!addressValid) {
+            return false;
+        }
+    }
 
-//     return valid;
-// }
+    return valid;
+}
 
-// export default validateWallet;
+export default validateWallet;
