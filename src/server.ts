@@ -29,7 +29,7 @@ async function validateWallet(rpcUrl: string, authData: AuthData) {
 
     async function fetchZanoApi(method: string, params: any) {
         return await axios.post(
-            'http://195.201.107.230:33340/json_rpc', 
+            rpcUrl, 
             {
                 "id": 0,
                 "jsonrpc": "2.0",
