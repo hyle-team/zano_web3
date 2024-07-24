@@ -140,7 +140,7 @@ class ZanoWallet {
             alias: walletData.alias,
             address: walletData.address,
             signature,
-            publicKey,
+            pkey: publicKey,
             message: nonce,
             isSavedData: !!existingWallet
         }
