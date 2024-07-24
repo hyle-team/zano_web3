@@ -116,7 +116,9 @@ class ZanoWallet {
 
         const existingWallet = this.params.useLocalStorage ? this.getSavedWalletCredentials() : undefined;
 
-        if (existingWallet && existingWallet.address === walletData.address) {
+        const existingWalletValid = existingWallet && existingWallet.address === walletData.address;
+
+        if (existingWalletValid) {
             nonce = existingWallet.nonce;
             signature = existingWallet.signature;
             publicKey = existingWallet.publicKey;
@@ -147,7 +149,7 @@ class ZanoWallet {
             signature,
             pkey: publicKey,
             message: nonce,
-            isSavedData: !!existingWallet
+            isSavedData: existingWalletValid
         }
 
         if (this.params.onLocalConnectEnd) {
@@ -176,7 +178,7 @@ class ZanoWallet {
                 return this.handleError({ message: result.error });
             }
 
-            if (!existingWallet && this.params.useLocalStorage) {
+            if (!existingWalletValid && this.params.useLocalStorage) {
                 this.setWalletCredentials({
                     publicKey,
                     signature,
