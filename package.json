@@ -1,6 +1,6 @@
 {
   "name": "zano_web3",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
