@@ -50,7 +50,7 @@ class ZanoWallet {
         }
 
         if (!((window as unknown) as ZanoWindow).zano) {
-            throw new Error('ZanoWallet requires the ZanoWallet extension to be installed');
+            console.error('ZanoWallet requires the ZanoWallet extension to be installed');
         }
 
         this.params = params;
