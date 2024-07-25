@@ -204,6 +204,10 @@ class ZanoWallet {
     async getWallet() {
         return (await this.zanoWallet.request('GET_WALLET_DATA'))?.data as Wallet;
     }
+
+    async getAddressByAlias(alias: string) {
+        return ((await this.zanoWallet.request('GET_ALIAS_DETAILS', { alias })) || undefined) as string | undefined;
+    }
 }
 
 export default ZanoWallet;
