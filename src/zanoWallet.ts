@@ -208,6 +208,10 @@ class ZanoWallet {
     async getAddressByAlias(alias: string) {
         return ((await this.zanoWallet.request('GET_ALIAS_DETAILS', { alias })) || undefined) as string | undefined;
     }
+
+    async createAlias(alias: string) {
+        return ((await this.zanoWallet.request('CREATE_ALIAS', { alias })) || undefined);
+    }
 }
 
 export default ZanoWallet;
