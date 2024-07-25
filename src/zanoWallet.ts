@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
+import { Wallet } from './types';
 
 export interface ZanoWalletParams {
     authPath: string;
@@ -201,7 +202,7 @@ class ZanoWallet {
     }
     
     async getWallet() {
-        return (await this.zanoWallet.request('GET_WALLET_DATA'))?.data;
+        return (await this.zanoWallet.request('GET_WALLET_DATA'))?.data as Wallet;
     }
 }
 
