@@ -210,7 +210,7 @@ class ZanoWallet {
     }
 
     async createAlias(alias: string) {
-        return ((await this.zanoWallet.request('CREATE_ALIAS', { alias })) || undefined);
+        return ((await this.zanoWallet.request('CREATE_ALIAS', { alias })) || undefined).data;
     }
 }
 
