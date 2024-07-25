@@ -201,7 +201,7 @@ class ZanoWallet {
     }
     
     async getWallet() {
-        return await this.zanoWallet.request('GET_WALLET_DATA');
+        return (await this.zanoWallet.request('GET_WALLET_DATA'))?.data;
     }
 }
 
