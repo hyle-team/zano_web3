@@ -165,6 +165,94 @@ export interface Wallet {
 ```
 
 
+## Server-Side Validator
+
+The server-side validator function, `validateWallet`, is used to validate wallet authentication data using the Zano RPC API. It supports authentication using either an alias or a public key.
+
+### Usage
+
+The function `validateWallet` accepts a `rpcUrl` for the Zano node and an `AuthData` object containing the authentication details.
+
+```typescript
+import validateWallet from './validateWallet';
+
+const authData = {
+    address: 'wallet_address',
+    signature: 'signed_message',
+    message: 'original_message',
+    alias: 'user_alias' // or pkey: 'public_key'
+};
+
+const rpcUrl = 'https://zano-node.example.com';
+
+validateWallet(rpcUrl, authData)
+    .then(valid => {
+        if (valid) {
+            console.log('Wallet is valid');
+        } else {
+            console.log('Invalid wallet data');
+        }
+    });
+```
+
+### AuthData Types
+
+The `AuthData` type is a union of `AliasAuth` and `PkeyAuth` interfaces:
+
+```typescript
+interface BaseAuthData {
+    address: string;
+    signature: string;
+    message: string;
+}
+
+interface AliasAuth extends BaseAuthData {
+    alias: string;
+}
+
+interface PkeyAuth extends BaseAuthData {
+    pkey: string;
+}
+
+type AuthData = AliasAuth | PkeyAuth;
+```
+
+### Internal Validation Logic
+
+The `validateWallet` function internally uses the Zano RPC method `validate_signature` to verify the authenticity of the provided signature against the message. If an alias is provided, it also checks that the alias resolves to the correct wallet address.
+
+### Functions
+
+#### `validateWallet(rpcUrl: string, authData: AuthData)`
+
+- `rpcUrl`: The URL of the Zano RPC node.
+- `authData`: The authentication data, which includes the address, signature, message, and optionally alias or public key.
+
+Returns `true` if the wallet data is valid, otherwise returns `false`.
+
+#### Example
+
+```typescript
+const authData = {
+    address: 'wallet_address',
+    signature: 'signed_message',
+    message: 'original_message',
+    alias: 'user_alias' // or pkey: 'public_key'
+};
+
+const rpcUrl = 'https://zano-node.example.com';
+
+validateWallet(rpcUrl, authData)
+    .then(valid => {
+        if (valid) {
+            console.log('Wallet is valid');
+        } else {
+            console.log('Invalid wallet data');
+        }
+    });
+```
+
+
 ## Requirements
 
 - ZanoWallet browser extension must be installed.
