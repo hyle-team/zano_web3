@@ -2,11 +2,11 @@
   "name": "zano_web3",
   "version": "4.8.0",
   "description": "",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "type": "module",
   "scripts": {
-    "build": "tsc",
+    "build:web": "tsc --project tsconfig.web.json",
+    "build:server": "tsc --project tsconfig.server.json",
+    "build": "npm run build:web && npm run build:server",
     "postinstall": "npm run build"
   },
   "repository": {
@@ -27,6 +27,7 @@
     "@types/react": "^18.3.3",
     "@types/uuid": "^10.0.0",
     "axios": "^1.7.2",
+    "big.js": "^6.2.1",
     "react": "^18.3.1",
     "typescript": "^5.5.4",
     "uuid": "^10.0.0"
@@ -34,5 +35,8 @@
   "bugs": {
     "url": "https://github.com/hyle-team/zano_web3/issues"
   },
-  "homepage": "https://github.com/hyle-team/zano_web3#readme"
+  "homepage": "https://github.com/hyle-team/zano_web3#readme",
+  "devDependencies": {
+    "@types/big.js": "^6.2.2"
+  }
 }

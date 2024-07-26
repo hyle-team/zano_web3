@@ -1,11 +1,11 @@
-import zanoWallet from "./src/zanoWallet";
+import zanoWallet from "./src/web/src/zanoWallet";
 
-import {useZanoWallet} from "./src/hooks";
+import {useZanoWallet} from "./src/web/src/hooks";
 export {useZanoWallet};
 
-import validateWallet from "./src/server";
+import validateWallet from "./src/server/src/server";
 export {validateWallet};
 
-export * from "./src/types";
+export * from "./src/web/src/types";
 
 export default zanoWallet;
