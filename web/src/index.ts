@@ -5,4 +5,4 @@ export {useZanoWallet};
 
 export * from "./types";
 
-export default zanoWallet;
+export {zanoWallet};
