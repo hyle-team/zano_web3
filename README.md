@@ -116,53 +116,53 @@ const newAliasData = await zanoWallet.createAlias('newAlias');
 console.log('Alias created:', newAliasData);
 ```
 
+
 ## Exported Types
 
-The library also exports several TypeScript interfaces for handling various aspects of the wallet and transactions:
+The following TypeScript interfaces are exported by the `zano_web3` library.
+You can import them directly from library:
 
-### Asset
+```typescript
+import { Wallet, Asset, Transfer, Transaction } from 'zano_web3';
+```
 
-Represents a digital asset within the wallet.
+```typescript
+export interface Asset {
+    name: string;
+    ticker: string;
+    assetId: string;
+    decimalPoint: number;
+    balance: string;
+    unlockedBalance: string;
+}
 
-- **name**: The name of the asset.
-- **ticker**: The ticker symbol of the asset.
-- **assetId**: A unique identifier for the asset.
-- **decimalPoint**: The number of decimal places the asset uses.
-- **balance**: The total balance of the asset in the wallet.
-- **unlockedBalance**: The portion of the balance that is unlocked and available for use.
+export interface Transfer {
+    amount: string;
+    assetId: string;
+    incoming: boolean;
+}
 
-### Transfer
+export interface Transaction {
+    isConfirmed: boolean;
+    txHash: string;
+    blobSize: number;
+    timestamp: number;
+    height: number;
+    paymentId: string;
+    comment: string;
+    fee: string;
+    isInitiator: boolean;
+    transfers: Transfer[];
+}
 
-Describes a transfer of assets, either incoming or outgoing.
-
-- **amount**: The amount of the asset transferred.
-- **assetId**: The identifier of the asset being transferred.
-- **incoming**: A boolean indicating whether the transfer is incoming (`true`) or outgoing (`false`).
-
-### Transaction
-
-Details a transaction within the wallet.
-
-- **isConfirmed**: Indicates whether the transaction is confirmed.
-- **txHash**: The hash of the transaction.
-- **blobSize**: The size of the transaction blob.
-- **timestamp**: The timestamp when the transaction was made.
-- **height**: The blockchain height at which the transaction was included.
-- **paymentId**: An optional payment identifier associated with the transaction.
-- **comment**: An optional comment about the transaction.
-- **fee**: The transaction fee paid.
-- **isInitiator**: A boolean indicating if the wallet initiated the transaction.
-- **transfers**: An array of `Transfer` objects representing the transfers involved in the transaction.
-
-### Wallet
-
-Represents the main wallet structure, containing information about the user's wallet.
-
-- **address**: The address of the wallet.
-- **alias**: An optional alias for the wallet.
-- **balance**: The total balance of the wallet.
-- **assets**: An array of `Asset` objects representing the different assets held in the wallet.
-- **transactions**: An array of `Transaction` objects representing the transaction history of the wallet.
+export interface Wallet {
+    address: string;
+    alias: string;
+    balance: string;
+    assets: Asset[];
+    transactions: Transaction[];
+}
+```
 
 
 ## Requirements
