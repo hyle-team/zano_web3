@@ -341,7 +341,7 @@ import { AuthData } from "./types";
     };
 
     try {
-        const isValid = await zanoServerAPI.validateWallet("http://127.0.0.1:11211/json_rpc", authData);
+        const isValid = await zanoServerAPI.validateWallet(authData);
         console.log("Wallet validation:", isValid ? "Valid" : "Invalid");
     } catch (error) {
         console.error("Validation failed:", error.message);

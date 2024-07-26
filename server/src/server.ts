@@ -186,19 +186,7 @@ class ServerWallet {
         }
     };
 
-    async validateWallet(rpcUrl: string, authData: AuthData) {
-
-        async function fetchZanoApi(method: string, params: any) {
-            return await axios.post(
-                rpcUrl,
-                {
-                    "id": 0,
-                    "jsonrpc": "2.0",
-                    "method": method,
-                    "params": params,
-                }
-            ).then(res => res.data);
-        }
+    async validateWallet(authData: AuthData) {
     
         const { message, address, signature } = authData;
     
@@ -220,26 +208,26 @@ class ServerWallet {
             validationParams['pkey'] = pkey;
         }
     
-        const response = await fetchZanoApi(
+        const response = await this.fetchDaemon(
             'validate_signature',
             validationParams
         );
     
-        const valid = response?.result?.status === 'OK';
+        const valid = response?.data?.result?.status === 'OK';
     
         if (!valid) {
             return false;
         }
     
         if (alias) {
-            const aliasDetailsResponse = await fetchZanoApi(
+            const aliasDetailsResponse = await this.fetchDaemon(
                 'get_alias_details',
                 {
                     "alias": alias,
                 }
             );
     
-            const aliasDetails = aliasDetailsResponse?.result?.alias_details;
+            const aliasDetails = aliasDetailsResponse?.data?.result?.alias_details;
             const aliasAddress = aliasDetails?.address;
     
             const addressValid = !!aliasAddress && aliasAddress === address;
