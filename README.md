@@ -9,6 +9,7 @@
 - **Local Storage Support**: Optionally store wallet credentials in local storage.
 - **Customizable**: Offers hooks for various connection lifecycle events.
 - **Error Handling**: Provides a structured way to handle errors during the connection process.
+- **Alias Management**: Allows retrieving and creating aliases.
 
 ## Installation
 
@@ -88,28 +89,80 @@ zanoWallet.setWalletCredentials({
 });
 ```
 
-## Using the `useZanoWallet` Hook
+### Retrieving Wallet Data
 
-The `useZanoWallet` hook is a custom React hook provided by the `zano_web3` library. It simplifies the process of interacting with the ZanoWallet extension in a React application.
-
-This hook is designed to handle server-side rendering (SSR) limitations by ensuring that it only runs on the client-side. This means that any code using the `useZanoWallet` hook will not be executed during server-side rendering, but will work as expected once the application is running in the browser.
-
-To use the `useZanoWallet` hook, you can import it from the `zano_web3` library and call it within a functional component:
+You can retrieve the wallet data using the `getWallet` method:
 
 ```typescript
-import { useZanoWallet } from 'zano_web3';
-
-function MyComponent() {
-    
-    const wallet = useZanoWallet({
-        // same params as for new ZanoWallet
-    });
-
-    return (
-       <div>Your component...</div>
-    );
-}
+const wallet = await zanoWallet.getWallet();
+console.log('Wallet data:', wallet);
 ```
+
+### Getting Address by Alias
+
+To get an address by alias, use the `getAddressByAlias` method:
+
+```typescript
+const address = await zanoWallet.getAddressByAlias('exampleAlias');
+console.log('Address:', address);
+```
+
+### Creating an Alias
+
+To create a new alias, use the `createAlias` method:
+
+```typescript
+const newAliasData = await zanoWallet.createAlias('newAlias');
+console.log('Alias created:', newAliasData);
+```
+
+## Exported Types
+
+The library also exports several TypeScript interfaces for handling various aspects of the wallet and transactions:
+
+### Asset
+
+Represents a digital asset within the wallet.
+
+- **name**: The name of the asset.
+- **ticker**: The ticker symbol of the asset.
+- **assetId**: A unique identifier for the asset.
+- **decimalPoint**: The number of decimal places the asset uses.
+- **balance**: The total balance of the asset in the wallet.
+- **unlockedBalance**: The portion of the balance that is unlocked and available for use.
+
+### Transfer
+
+Describes a transfer of assets, either incoming or outgoing.
+
+- **amount**: The amount of the asset transferred.
+- **assetId**: The identifier of the asset being transferred.
+- **incoming**: A boolean indicating whether the transfer is incoming (`true`) or outgoing (`false`).
+
+### Transaction
+
+Details a transaction within the wallet.
+
+- **isConfirmed**: Indicates whether the transaction is confirmed.
+- **txHash**: The hash of the transaction.
+- **blobSize**: The size of the transaction blob.
+- **timestamp**: The timestamp when the transaction was made.
+- **height**: The blockchain height at which the transaction was included.
+- **paymentId**: An optional payment identifier associated with the transaction.
+- **comment**: An optional comment about the transaction.
+- **fee**: The transaction fee paid.
+- **isInitiator**: A boolean indicating if the wallet initiated the transaction.
+- **transfers**: An array of `Transfer` objects representing the transfers involved in the transaction.
+
+### Wallet
+
+Represents the main wallet structure, containing information about the user's wallet.
+
+- **address**: The address of the wallet.
+- **alias**: An optional alias for the wallet.
+- **balance**: The total balance of the wallet.
+- **assets**: An array of `Asset` objects representing the different assets held in the wallet.
+- **transactions**: An array of `Transaction` objects representing the transaction history of the wallet.
 
 
 ## Requirements
