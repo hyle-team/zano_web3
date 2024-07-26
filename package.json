@@ -23,6 +23,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/big.js": "^6.2.2",
     "@types/node": "^20.14.12",
     "@types/react": "^18.3.3",
     "@types/uuid": "^10.0.0",
@@ -35,8 +36,5 @@
   "bugs": {
     "url": "https://github.com/hyle-team/zano_web3/issues"
   },
-  "homepage": "https://github.com/hyle-team/zano_web3#readme",
-  "devDependencies": {
-    "@types/big.js": "^6.2.2"
-  }
+  "homepage": "https://github.com/hyle-team/zano_web3#readme"
 }
