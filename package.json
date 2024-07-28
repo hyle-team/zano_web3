@@ -1,6 +1,6 @@
 {
   "name": "zano_web3",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "",
   "type": "module",
   "scripts": {
@@ -48,6 +48,5 @@
       "types": "./server/dist/index.d.ts"
     }
   },
-  
   "homepage": "https://github.com/hyle-team/zano_web3#readme"
 }
