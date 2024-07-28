@@ -66,6 +66,27 @@ const zanoWallet = new ZanoWallet({
 });
 ```
 
+### React / Next.js
+
+For React or Next.js projects, you can use the `useZanoWallet` hook to create a `ZanoWallet` instance:
+
+```tsx
+
+import { useZanoWallet } from 'zano_web3/web';
+
+const MyComponent = () => {
+    const zanoWallet = useZanoWallet({
+        // same options as for ZanoWallet constructor
+    });
+
+    return (
+        <div>
+            <button onClick={() => zanoWallet.connect()}>Connect to ZanoWallet</button>
+        </div>
+    );
+};
+```
+
 ### Connecting to ZanoWallet
 
 To initiate the connection process, call the `connect` method:
