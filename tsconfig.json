@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "moduleResolution": "node",
     "resolveJsonModule": true,
+    "declaration": true,
     "lib": [
       "ESNext",
       "DOM"
