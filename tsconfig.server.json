@@ -3,7 +3,8 @@
     "compilerOptions": {
       "outDir": "./server/dist",
       "declarationDir": "./server/dist",
+      "rootDir": "./server/src",
     },
-    "include": ["server/src/**/*", "server/index.ts"],
+    "include": ["server/src/**/*"],
     "exclude": ["node_modules"]
   }

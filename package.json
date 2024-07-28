@@ -36,5 +36,21 @@
   "bugs": {
     "url": "https://github.com/hyle-team/zano_web3/issues"
   },
+  "exports": {
+    "./web": {
+      "import": "./web/dist/index.js",
+      "require": "./web/dist/index.js",
+      "types": "./web/dist/index.d.ts"
+    },
+    "./server": {
+      "import": "./server/dist/index.js",
+      "require": "./server/dist/index.js",
+      "types": "./server/dist/index.d.ts"
+    }
+  },
+  "files": [
+    "web/dist",
+    "server/dist"
+  ],
   "homepage": "https://github.com/hyle-team/zano_web3#readme"
 }

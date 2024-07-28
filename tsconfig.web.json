@@ -3,7 +3,8 @@
     "compilerOptions": {
       "outDir": "./web/dist",
       "declarationDir": "./web/dist",
+      "rootDir": "./web/src",
     },
-    "include": ["web/src/**/*", "web/index.ts"],
+    "include": ["web/src/**/*"],
     "exclude": ["node_modules"],
   }
