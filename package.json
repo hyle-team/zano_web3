@@ -48,5 +48,6 @@
       "types": "./server/dist/index.d.ts"
     }
   },
+  
   "homepage": "https://github.com/hyle-team/zano_web3#readme"
 }
