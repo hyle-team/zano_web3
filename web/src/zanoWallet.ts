@@ -199,6 +199,8 @@ class ZanoWallet {
                 });
             }
         }
+
+        return true;
     }
     
     async getWallet() {
