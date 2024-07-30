@@ -158,6 +158,23 @@ class ServerWallet {
         }
     };
 
+    async getAliasByAddress(address: string) {
+        try {
+            const response = await this.fetchDaemon("get_alias_by_address", address);
+
+            if (response.data.result) {
+                return response.data.result;
+            } else {
+                throw new ZanoError(
+                    `Error fetching alias for address ${address}`,
+                    "ALIAS_FETCH_ERROR"
+                );
+            }
+        } catch (error) {
+            throw new ZanoError("Failed to fetch alias", "ALIAS_FETCH_ERROR");
+        }
+    }
+
     async getBalances() {
         try {
             const response = await this.fetchWallet("getbalance", {});
