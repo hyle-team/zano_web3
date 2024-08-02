@@ -47,6 +47,11 @@ export interface BalanceInfo {
     ticker: string;
     id: string;
     amount: string;
+    awaiting_in: string;
+    awaiting_out: string;
+    total: string;
+    unlocked: string;
+    asset_info: APIAsset;
 }
 
 export interface SubTransfer {
