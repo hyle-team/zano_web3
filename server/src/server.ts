@@ -6,6 +6,7 @@ import {
     PkeyAuth,
     ValidationParams,
     BalanceInfo,
+    TxInfo,
 } from './types';
 
 import { ZANO_ASSET_ID, ZanoError } from './utils';
@@ -276,7 +277,7 @@ class ServerWallet {
             "update_provision_info":  params.update_provision_info || true
         });
 
-        return txs.data.result;
+        return txs.data.result as TxInfo;
     }
 }
 

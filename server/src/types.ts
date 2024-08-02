@@ -48,3 +48,49 @@ export interface BalanceInfo {
     id: string;
     amount: string;
 }
+
+export interface SubTransfer {
+    amount: number;
+    asset_id: string;
+    is_income: boolean;
+}
+
+export interface EmployedEntry {
+    amount: number;
+    asset_id: string;
+    index: number;
+}
+
+export interface Transfer {
+    employed_entries: {
+        receive: EmployedEntry[];
+        spent: EmployedEntry[];
+    },
+    subtransfers: SubTransfer[],
+    comment: string;
+    fee: number;
+    height: number;
+    is_mining: boolean;
+    is_mixing: boolean;
+    is_service: boolean;
+    payment_id: string;
+    show_sender: boolean;
+    timestamp: number;
+    transfer_internal_index: number;
+    tx_blob_size: number;
+    tx_hash: string;
+    tx_type: number;
+    unlock_time: number;
+}
+export interface TxInfo {
+    last_item_index: number;
+    pi: {
+      balance: number;
+      curent_height: number;
+      transfer_entries_count: number;
+      transfers_count: number;
+      unlocked_balance: number;
+    };
+    total_transfers: number;
+    transfers: Transfer[];
+}
