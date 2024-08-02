@@ -17,6 +17,15 @@ interface ConstructorParams {
     daemonUrl: string;
 }
 
+interface GetTxsParams {
+    count: number;
+    offset: number;
+    exclude_mining_txs?: boolean;
+    exclude_unconfirmed?: boolean;
+    order?: string;
+    update_provision_info?: boolean;
+}
+
 class ServerWallet {
     private walletUrl: string;
     private daemonUrl: string;
@@ -255,6 +264,19 @@ class ServerWallet {
         }
     
         return valid;
+    }
+
+    async getTxs(params: GetTxsParams) {
+        const txs = await this.fetchWallet("get_recent_txs_and_info2", {
+            "count": params.count,
+            "exclude_mining_txs": params.exclude_mining_txs || false,
+            "exclude_unconfirmed": params.exclude_unconfirmed || false,
+            "offset": params.offset,
+            "order": params.order || "FROM_END_TO_BEGIN",
+            "update_provision_info":  params.update_provision_info || true
+        });
+
+        return txs.data.result;
     }
 }
 
