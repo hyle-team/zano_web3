@@ -198,6 +198,10 @@ class ServerWallet {
                 amount: new Big(asset.unlocked)
                     .div(new Big(10).pow(asset.asset_info.decimal_point))
                     .toString(),
+                awaiting_in: new Big(asset.awaiting_in),
+                awaiting_out: new Big(asset.awaiting_out),
+                total: new Big(asset.total),
+                unlocked: new Big(asset.unlocked),
             }));
 
             return balances.sort((a, b) => {
