@@ -81,6 +81,8 @@ export interface Transfer {
     tx_hash: string;
     tx_type: number;
     unlock_time: number;
+    remote_addresses: string[] | undefined;
+    remote_aliases: string[] | undefined;
 }
 export interface TxInfo {
     last_item_index: number;
