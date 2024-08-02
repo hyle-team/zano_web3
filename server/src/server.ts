@@ -202,6 +202,7 @@ class ServerWallet {
                 awaiting_out: new Big(asset.awaiting_out).toString(),
                 total: new Big(asset.total).toString(),
                 unlocked: new Big(asset.unlocked).toString(),
+                asset_info: asset.asset_info
             }));
 
             return balances.sort((a, b) => {
