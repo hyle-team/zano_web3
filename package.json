@@ -6,7 +6,8 @@
   "scripts": {
     "build:web": "tsc --project tsconfig.web.json",
     "build:server": "tsc --project tsconfig.server.json",
-    "build": "npm run build:web && npm run build:server",
+    "build:shared": "tsc --project tsconfig.shared.json",
+    "build": "npm run build:web && npm run build:server && npm run build:shared",
     "postinstall": "npm run build"
   },
   "repository": {
@@ -29,6 +30,7 @@
     "@types/uuid": "^10.0.0",
     "axios": "^1.7.2",
     "big.js": "^6.2.1",
+    "decimal.js": "^10.4.3",
     "react": "^18.3.1",
     "typescript": "^5.5.4",
     "uuid": "^10.0.0"
@@ -46,6 +48,11 @@
       "import": "./server/dist/index.js",
       "require": "./server/dist/index.js",
       "types": "./server/dist/index.d.ts"
+    },
+    "./shared": {
+      "import": "./shared/dist/index.js",
+      "require": "./shared/dist/index.js",
+      "types": "./shared/dist/index.d.ts"
     }
   },
   "homepage": "https://github.com/hyle-team/zano_web3#readme"
