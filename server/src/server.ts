@@ -7,6 +7,7 @@ import {
   ValidationParams,
   BalanceInfo,
   TxInfo,
+  AliasDetails,
 } from "./types";
 
 import { ZANO_ASSET_ID, ZanoError } from "./utils";
@@ -292,6 +293,24 @@ class ServerWallet {
 
     return txs.data.result as TxInfo;
   }
+  async getAliasDetails(alias: string) {
+    try {
+        const response = await this.fetchDaemon("get_alias_details", {
+            alias,
+        });
+        if (response.data.result) {
+            return response.data.result as AliasDetails;
+        } else {
+            throw new ZanoError(
+                `Error fetching alias ${alias}`,
+                "ALIAS_FETCH_ERROR"
+            );
+        }
+    } catch {
+        throw new ZanoError("Failed to fetch alias", "ALIAS_FETCH_ERROR");
+    }
+}
+
 }
 
 export default ServerWallet;
