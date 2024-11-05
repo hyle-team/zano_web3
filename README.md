@@ -204,6 +204,7 @@ export interface Wallet {
 - `sendTransfer(assetId: string, address: string, amount: string)`: Sends a transfer to an address.
 - `getBalances()`: Retrieves the balances.
 - `validateWallet(rpcUrl: string, authData: AuthData)`: Validates the wallet.
+- `getAliasDetails(alias:string)` : Retrieves information about a specific address alias.
 
 
 #### 1. **Updating Wallet RPC URL**
@@ -368,6 +369,28 @@ import { AuthData } from "./types";
         console.error("Validation failed:", error.message);
     }
 })();
+```
+
+#### 9. **Get Alias details**
+
+```javascript
+import { ServerWallet } from "zano_web3/server";
+
+const alias = "alias";
+
+(async (alias) => {
+    const zanoServerAPI = new ServerWallet({
+        walletUrl: "http://127.0.0.1:11211/json_rpc",
+        daemonUrl: "http://127.0.0.1:11211/json_rpc"
+    });
+
+    try {
+        const aliasDetails = await zanoServerAPI.getAliasDetails(alias);
+        console.log(aliasDetails);
+    } catch (error) {
+        console.error(error.message);
+    }
+})(alias);
 ```
 
 ## Requirements
