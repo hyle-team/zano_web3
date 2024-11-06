@@ -14,7 +14,6 @@ export interface PkeyAuth extends BaseAuthData {
 
 export type AuthData = AliasAuth | PkeyAuth;
 
-
 export interface ValidationParams {
     buff: string;
     sig: string;
@@ -70,8 +69,8 @@ export interface Transfer {
     employed_entries: {
         receive: EmployedEntry[];
         spent: EmployedEntry[];
-    },
-    subtransfers: SubTransfer[],
+    };
+    subtransfers: SubTransfer[];
     comment: string;
     fee: number;
     height: number;
@@ -92,18 +91,21 @@ export interface Transfer {
 export interface TxInfo {
     last_item_index: number;
     pi: {
-      balance: number;
-      curent_height: number;
-      transfer_entries_count: number;
-      transfers_count: number;
-      unlocked_balance: number;
+        balance: number;
+        curent_height: number;
+        transfer_entries_count: number;
+        transfers_count: number;
+        unlocked_balance: number;
     };
     total_transfers: number;
     transfers: Transfer[];
 }
 
 export interface AliasDetails {
-    address: string;
-    comment: string;
-    tracking_key: string;
+    alias_details: {
+        address: string;
+        comment: string;
+        tracking_key: string;
+    };
+    status: 'OK' | 'NOT_FOUND';
 }
