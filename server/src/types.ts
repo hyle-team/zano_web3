@@ -101,3 +101,9 @@ export interface TxInfo {
     total_transfers: number;
     transfers: Transfer[];
 }
+
+export interface AliasDetails {
+    address: string;
+    comment: string;
+    tracking_key: string;
+}
