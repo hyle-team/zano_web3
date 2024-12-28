@@ -12,10 +12,12 @@ import {
 
 import { ZANO_ASSET_ID, ZanoError } from "./utils";
 import { APIAsset, APIBalance } from "./types";
+import forge from "node-forge";
 
 interface ConstructorParams {
   walletUrl: string;
   daemonUrl: string;
+  walletAuthToken?: string;
 }
 
 interface GetTxsParams {
@@ -27,30 +29,87 @@ interface GetTxsParams {
   update_provision_info?: boolean;
 }
 
+interface JWTPayload {
+  body_hash: string,
+  user: string,
+  salt: string,
+  exp: number
+}
+
 class ServerWallet {
   private walletUrl: string;
   private daemonUrl: string;
+  private walletAuthToken: string;
 
   constructor(params: ConstructorParams) {
     this.walletUrl = params.walletUrl;
     this.daemonUrl = params.daemonUrl;
+    this.walletAuthToken = params.walletAuthToken || "";
   }
 
-  private async fetchDaemon(method: string, params: any) {
-    const headers = { "Content-Type": "application/json" };
+  private generateRandomString(length: number) {
+    const bytes = forge.random.getBytesSync(Math.ceil(length / 2));
+    const hexString = forge.util.bytesToHex(bytes);
+    return hexString.substring(0, length);
+  }
 
+  private createJWSToken(payload: JWTPayload, secretStr: string): string {
+    const header = { alg: "HS256", typ: "JWT" };
+    const encodedHeader = Buffer.from(JSON.stringify(header))
+      .toString("base64")
+      .replace(/=/g, "");
+    const encodedPayload = Buffer.from(JSON.stringify(payload))
+      .toString("base64")
+      .replace(/=/g, "");
+  
+    const signature = forge.hmac.create();
+    signature.start("sha256", secretStr);
+    signature.update(`${encodedHeader}.${encodedPayload}`);
+    const encodedSignature = forge.util
+      .encode64(signature.digest().getBytes())
+      .replace(/=/g, "");
+  
+    return `${encodedHeader}.${encodedPayload}.${encodedSignature}`;
+  }
+  
+
+  private generateAccessToken(httpBody: string) {
+    // Calculate the SHA-256 hash of the HTTP body
+    const md = forge.md.sha256.create();
+    md.update(httpBody);
+    const bodyHash = md.digest().toHex();
+  
+    // Example payload
+    const payload = {
+      body_hash: bodyHash,
+      user: "zano_extension",
+      salt: this.generateRandomString(64),
+      exp: Math.floor(Date.now() / 1000) + 60, // Expires in 1 minute
+    };
+  
+    return this.createJWSToken(payload, this.walletAuthToken);
+  }
+  
+
+  private async fetchDaemon(method: string, params: any) {
+
+    
     const data = {
       jsonrpc: "2.0",
       id: 0,
       method: method,
       params: params,
+    };
+
+    const headers = {
+      "Content-Type": "application/json",
+      "Zano-Access-Token": this.generateAccessToken(JSON.stringify(data)),
     };
 
     return axios.post(this.daemonUrl, data, { headers });
   }
 
   private async fetchWallet(method: string, params: any) {
-    const headers = { "Content-Type": "application/json" };
 
     const data = {
       jsonrpc: "2.0",
@@ -58,6 +117,11 @@ class ServerWallet {
       method: method,
       params: params,
     };
+
+    const headers = { 
+      "Content-Type": "application/json",
+      "Zano-Access-Token": this.generateAccessToken(JSON.stringify(data)),
+     };
 
     return axios.post(this.walletUrl, data, { headers });
   }
