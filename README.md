@@ -396,3 +396,16 @@ const alias = "alias";
 ## Requirements
 
 - Correct RPC URLs for the wallet and daemon.
+
+# Shared logic
+## Usage
+### validateTokensInput util
+validateTokensInput function checks whether a numeric or string value can be used as an amount for an asset with the specified DP.
+
+```typescript
+import { validateTokensInput } from "zano_web3/shared";
+
+let isValidAmount = validateTokensInput("18446744.073709551615", 12); // true
+
+isValidAmount = validateTokensInput("18446744.073709551616", 12); // false
+```
