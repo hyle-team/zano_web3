@@ -7,8 +7,7 @@
     "build:web": "tsc --project tsconfig.web.json",
     "build:server": "tsc --project tsconfig.server.json",
     "build:shared": "tsc --project tsconfig.shared.json",
-    "build": "npm run build:web && npm run build:server && npm run build:shared",
-    "postinstall": "npm run build"
+    "build": "npm run build:web && npm run build:server && npm run build:shared"
   },
   "repository": {
     "type": "git",
