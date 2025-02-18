@@ -91,7 +91,7 @@ class ServerWallet {
   }
   
 
-  private async fetchDaemon(method: string, params: any) {
+  async fetchDaemon(method: string, params: any) {
 
     
     const data = {
@@ -109,7 +109,7 @@ class ServerWallet {
     return axios.post(this.daemonUrl, data, { headers });
   }
 
-  private async fetchWallet(method: string, params: any) {
+  async fetchWallet(method: string, params: any) {
 
     const data = {
       jsonrpc: "2.0",
