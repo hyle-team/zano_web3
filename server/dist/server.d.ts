@@ -21,8 +21,8 @@ declare class ServerWallet {
     private generateRandomString;
     private createJWSToken;
     private generateAccessToken;
-    private fetchDaemon;
-    private fetchWallet;
+    fetchDaemon(method: string, params: any): Promise<import("axios").AxiosResponse<any, any>>;
+    fetchWallet(method: string, params: any): Promise<import("axios").AxiosResponse<any, any>>;
     updateWalletRpcUrl(rpcUrl: string): Promise<void>;
     updateDaemonRpcUrl(rpcUrl: string): Promise<void>;
     getAssetsList(): Promise<APIAsset[]>;
