@@ -137,7 +137,7 @@ class ServerWallet {
     }
   }
 
-  async sendTransfer(assetId: string, address: string, amount: string) {
+  async sendTransfer(assetId: string, address: string, amount: string, comment?: string) {
     let decimalPoint: number;
     let auditable: boolean;
 
@@ -160,11 +160,14 @@ class ServerWallet {
       .toString();
 
     try {
-      const response = await this.fetchWallet("transfer", {
+      const params = {
         destinations: [{ address, amount: bigAmount, asset_id: assetId }],
         fee: "10000000000",
         mixin: auditable ? 0 : 15,
-      });
+        comment
+      }
+
+      const response = await this.fetchWallet("transfer", params);
 
       if (response.data.result) {
         return response.data.result;
