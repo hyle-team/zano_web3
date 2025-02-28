@@ -23,7 +23,7 @@ export interface Transaction {
     comment: string;
     fee: string;
     isInitiator: boolean;
-    subtransfers: Transfer[];
+    transfers: Transfer[];
 }
 
 export interface Wallet {
