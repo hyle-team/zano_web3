@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Wallet } from './types';
+import { AddAssetToWhitelistParams, AssetInfo, GetAssetDecimalPointParams, GetAssetInfoParams, TransferParams, Wallet, WhitelistItem } from './types';
 
 export interface ZanoWalletParams {
     authPath: string;
     useLocalStorage?: boolean; // default: true
-    aliasRequired?: boolean; 
+    aliasRequired?: boolean;
     customLocalStorageKey?: string;
     customNonce?: string;
     customServerPath?: string;
@@ -42,7 +42,7 @@ class ZanoWallet {
 
     private params: ZanoWalletParams;
     private zanoWallet: ZanoWindowParams;
-    
+
     constructor(params: ZanoWalletParams) {
 
         if (typeof window === 'undefined') {
@@ -57,9 +57,9 @@ class ZanoWallet {
         this.zanoWallet = ((window as unknown) as ZanoWindow).zano;
         this.localStorageKey = params.customLocalStorageKey || this.DEFAULT_LOCAL_STORAGE_KEY;
     }
-    
 
-    private handleError({ message } : { message: string }) {
+
+    private handleError({ message }: { message: string }) {
         if (this.params.onConnectError) {
             this.params.onConnectError(message);
         } else {
@@ -122,7 +122,7 @@ class ZanoWallet {
         console.log('existingWalletValid', existingWalletValid);
         console.log('existingWallet', existingWallet);
         console.log('walletData', walletData);
-        
+
         if (existingWalletValid) {
             nonce = existingWallet.nonce;
             signature = existingWallet.signature;
@@ -131,23 +131,23 @@ class ZanoWallet {
             const generatedNonce = this.params.customNonce || uuidv4();
 
             const signResult = await this.zanoWallet.request(
-                'REQUEST_MESSAGE_SIGN', 
+                'REQUEST_MESSAGE_SIGN',
                 {
                     message: generatedNonce
-                }, 
+                },
                 null
             );
 
             if (!signResult?.data?.result) {
                 return this.handleError({ message: 'Failed to sign message' });
-            }      
+            }
 
             nonce = generatedNonce;
             signature = signResult.data.result.sig;
             publicKey = signResult.data.result.pkey;
         }
 
-        
+
         const serverData = {
             alias: walletData.alias,
             address: walletData.address,
@@ -162,7 +162,7 @@ class ZanoWallet {
         }
 
         if (!this.params.disableServerRequest) {
-            const result = await fetch( this.params.customServerPath || "/api/auth", {
+            const result = await fetch(this.params.customServerPath || "/api/auth", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -173,11 +173,11 @@ class ZanoWallet {
                     }
                 )
             })
-            .then(res => res.json())
-            .catch((e) => ({
-                success: false,
-                error: e.message
-            }));  
+                .then(res => res.json())
+                .catch((e) => ({
+                    success: false,
+                    error: e.message
+                }));
 
             if (!result?.success || !result?.data) {
                 return this.handleError({ message: result.error });
@@ -202,7 +202,7 @@ class ZanoWallet {
 
         return true;
     }
-    
+
     async getWallet() {
         return (await this.zanoWallet.request('GET_WALLET_DATA'))?.data as Wallet;
     }
@@ -213,6 +213,56 @@ class ZanoWallet {
 
     async createAlias(alias: string) {
         return ((await this.zanoWallet.request('CREATE_ALIAS', { alias })) || undefined).data;
+    }
+
+    async transfer(params: TransferParams) {
+        try {
+            const result = await this.zanoWallet.request('TRANSFER', params);
+            return result?.data || result;
+        } catch (error: any) {
+            this.handleError({ message: error.message || 'Transfer failed' });
+            return undefined;
+        }
+    }
+
+    async getAssetInfo(params: GetAssetInfoParams) {
+        try {
+            const result = await this.zanoWallet.request('GET_ASSET_INFO', params);
+            return result?.data;
+        } catch (error: any) {
+            this.handleError({ message: error.message || 'Failed to get asset info' });
+            return undefined;
+        }
+    }
+
+    async getWhiteList() {
+        try {
+            const result = await this.zanoWallet.request('GET_WHITELIST');
+            return result?.data;
+        } catch (error: any) {
+            this.handleError({ message: error.message || 'Failed to get whitelist' });
+            return undefined;
+        }
+    }
+
+    async addAssetToWhitelist(params: AddAssetToWhitelistParams) {
+        try {
+            const result = await this.zanoWallet.request('ADD_ASSET_TO_WHITELIST', params);
+            return result?.data?.success ?? true;
+        } catch (error: any) {
+            this.handleError({ message: error.message || 'Failed to add asset to whitelist' });
+            return false;
+        }
+    }
+
+    async getAssetDecimalPoint(params: GetAssetDecimalPointParams) {
+        try {
+            const result = await this.zanoWallet.request('GET_ASSET_DECIMAL_POINT', params);
+            return result?.data?.decimals;
+        } catch (error: any) {
+            this.handleError({ message: error.message || 'Failed to get asset decimal point' });
+            return undefined;
+        }
     }
 }
 

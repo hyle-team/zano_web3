@@ -12,7 +12,6 @@ export interface Transfer {
     assetId: string;
     incoming: boolean;
 }
-
 export interface Transaction {
     isConfirmed: boolean;
     txHash: string;
@@ -33,3 +32,39 @@ export interface Wallet {
     assets: Asset[];
     transactions: Transaction[];
 }
+
+export type Destination = {
+    address: string;
+    amount: number;
+};
+
+export type TransferParams = {
+    assetId?: string;
+    destinations: Destination[];
+    comment?: string;
+};
+
+export type GetAssetInfoParams = {
+    asset_id: string;
+};
+
+export type AddAssetToWhitelistParams = {
+    asset_id: string;
+};
+
+export type GetAssetDecimalPointParams = {
+    asset_id: string;
+};
+
+export type AssetInfo = {
+    id: string;
+    ticker: string;
+    name: string;
+    decimals: number;
+    description?: string;
+};
+
+export type WhitelistItem = {
+    asset_id: string;
+    ticker: string;
+};
