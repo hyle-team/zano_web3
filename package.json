@@ -3,6 +3,19 @@
   "version": "9.0.0",
   "description": "",
   "type": "module",
+  "main": "./web/dist/index.js",
+  "module": "./web/dist/index.js",
+  "browser": "./web/dist/index.js",
+  "node": "./server/dist/index.js",
+  "types": "./web/dist/index.d.ts",
+  "sideEffects": false,
+  "typesVersions": {
+    ">=4.2": {
+      "protobufs/*": [
+        "./dist/types/protobufs/*"
+      ]
+    }
+  },
   "scripts": {
     "build:web": "tsc --project tsconfig.web.json",
     "build:server": "tsc --project tsconfig.server.json",
@@ -40,6 +53,11 @@
     "url": "https://github.com/hyle-team/zano_web3/issues"
   },
   "exports": {
+    ".": {
+      "import": "./web/dist/index.js",
+      "require": "./web/dist/index.js",
+      "types": "./web/dist/index.d.ts"
+    },
     "./web": {
       "import": "./web/dist/index.js",
       "require": "./web/dist/index.js",
@@ -56,5 +74,12 @@
       "types": "./shared/dist/index.d.ts"
     }
   },
+  "files": [
+    "web",
+    "server",
+    "shared",
+    "package.json",
+    "README.md"
+  ],
   "homepage": "https://github.com/hyle-team/zano_web3#readme"
 }
