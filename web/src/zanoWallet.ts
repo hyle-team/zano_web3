@@ -161,10 +161,9 @@ class ZanoWallet {
             this.params.onLocalConnectEnd(serverData);
         }
 
-        const result = await (async () => {
-            if (this.params.disableServerRequest) return
 
-            const response = await fetch( this.params.customServerPath || "/api/auth", {
+        if (!this.params.disableServerRequest) {
+            const result = await fetch( this.params.customServerPath || "/api/auth", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -181,27 +180,25 @@ class ZanoWallet {
                 error: e.message
             }));  
 
-            if (!response?.success || !response?.data) {
-                return this.handleError({ message: response.error });
+            if (!result?.success || !result?.data) {
+                return this.handleError({ message: result.error });
             }
 
-            return response
-        })()
+            if (!existingWalletValid && this.params.useLocalStorage) {
+                this.setWalletCredentials({
+                    publicKey,
+                    signature,
+                    nonce,
+                    address: walletData.address
+                });
+            }
 
-        if (!existingWalletValid && this.params.useLocalStorage) {
-            this.setWalletCredentials({
-                publicKey,
-                signature,
-                nonce,
-                address: walletData.address
-            });
-        }
-
-        if (this.params.onConnectEnd) {
-            this.params.onConnectEnd({
-                ...serverData,
-                ...(result?.data.token && { token: result.data.token }),
-            });
+            if (this.params.onConnectEnd) {
+                this.params.onConnectEnd({
+                    ...serverData,
+                    token: result.data.token
+                });
+            }
         }
 
         return true;
