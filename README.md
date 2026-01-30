@@ -205,6 +205,8 @@ export interface Wallet {
 - `getBalances()`: Retrieves the balances.
 - `validateWallet(rpcUrl: string, authData: AuthData)`: Validates the wallet.
 - `getAliasDetails(alias:string)` : Retrieves information about a specific address alias.
+- `fetchDaemon(method: string, params: any)`: Fetches daemon with given method & params and returns an AxiosResponse object.
+- `fetchWallet(method: string, params: any)`: Fetches wallet with given method & params and returns an AxiosResponse object.
 
 
 #### 1. **Updating Wallet RPC URL**
@@ -391,6 +393,54 @@ const alias = "alias";
         console.error(error.message);
     }
 })(alias);
+```
+
+#### 10. **Fetch Daemon**
+
+```javascript
+import { ServerWallet } from "zano_web3/server";
+
+(async () => {
+    const zanoServerAPI = new ServerWallet({
+        walletUrl: "http://127.0.0.1:11211/json_rpc",
+        daemonUrl: "http://127.0.0.1:11211/json_rpc"
+    });
+
+    try {
+        // Fetch daemon and retrieve a response (e.g., the getinfo method)
+        const getInfoResponse = await zanoServerAPI.fetchDaemon("getinfo", {
+            "flags": 1048575
+        });
+
+        console.log("Info:", getInfoResponse.data.result);
+    } catch (error) {
+        console.error('Error fetching getinfo:', error);
+    }
+    
+})();
+```
+
+#### 11. **Fetch Wallet**
+
+```javascript
+import { ServerWallet } from "zano_web3/server";
+
+(async () => {
+    const zanoServerAPI = new ServerWallet({
+        walletUrl: "http://127.0.0.1:11211/json_rpc",
+        daemonUrl: "http://127.0.0.1:11211/json_rpc"
+    });
+
+    try {
+        // Fetch wallet and retrieve a response (e.g., the getaddress method)
+        const getAddressResponse = await zanoServerAPI.fetchWallet("getaddress", {});
+
+        console.log("Address Info:", getAddressResponse.data.result);
+    } catch (error) {
+        console.error('Error fetching getaddress:', error);
+    }
+    
+})();
 ```
 
 ## Requirements
