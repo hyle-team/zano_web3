@@ -24,7 +24,7 @@ export function validateTokensInput(input: string | number, decimal_point: numbe
         };
     }
   
-    const dotInput = input.replace(/,/g, '');
+    const dotInput = input.replace(/,/g, '.');
   
     const decimalDevider = new Decimal(10).pow(decimal_point);
   
