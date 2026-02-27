@@ -1,6 +1,6 @@
 {
   "name": "zano_web3",
-  "version": "9.2.0",
+  "version": "9.2.1",
   "description": "",
   "type": "module",
   "main": "./web/dist/index.js",
