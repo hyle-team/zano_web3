@@ -17,7 +17,7 @@ export function validateTokensInput(input, decimal_point = 12) {
             error: 'Invalid decimal point',
         };
     }
-    const dotInput = input.replace(/,/g, '');
+    const dotInput = input.replace(/,/g, '.');
     const decimalDevider = new Decimal(10).pow(decimal_point);
     const maxAllowedNumber = MAX_NUMBER.div(decimalDevider);
     const minAllowedNumber = new Decimal(1).div(decimalDevider);
