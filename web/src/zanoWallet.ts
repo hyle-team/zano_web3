@@ -215,6 +215,10 @@ class ZanoWallet {
     async createAlias(alias: string) {
         return ((await this.zanoWallet.request('CREATE_ALIAS', { alias })) || undefined).data;
     }
+
+    async addAssetToWhitelist(asset_id: string){
+        return ((await this.zanoWallet.request('ASSETS_WHITELIST_ADD', { asset_id })) || undefined).data;
+    }
 }
 
 export default ZanoWallet;
