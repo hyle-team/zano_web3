@@ -139,6 +139,14 @@ const newAliasData = await zanoWallet.createAlias('newAlias');
 console.log('Alias created:', newAliasData);
 ```
 
+### Add asset to whitelist
+
+To add asset to whitelist, use the `addAssetToWhitelist` method:
+
+```typescript
+const zanoWrappedABCId = 'f74bb56a5b4fa562e679ccaadd697463498a66de4f1760b2cd40f11c3a00a7a8';
+await zanoWallet.addAssetToWhitelist(zanoWrappedABCId);
+```
 
 ## Exported Types
 
@@ -201,7 +209,7 @@ export interface Wallet {
 - `getAssetsList()`: Retrieves the list of assets.
 - `getAssetDetails(assetId: string)`: Retrieves details of a specific asset.
 - `getAssetInfo(assetId: string)`: Retrieves info of a specific asset.
-- `sendTransfer(assetId: string, address: string, amount: string)`: Sends a transfer to an address.
+- `sendTransfer(assetId: string, address: string, amount: string, comment?: string)`: Sends a transfer to an address.
 - `getBalances()`: Retrieves the balances.
 - `validateWallet(rpcUrl: string, authData: AuthData)`: Validates the wallet.
 - `getAliasDetails(alias:string)` : Retrieves information about a specific address alias.
@@ -316,9 +324,10 @@ import { ServerWallet } from "zano_web3/server";
     const assetId = "example-asset-id";
     const address = "recipient-address";
     const amount = "10.5"; // in asset units
+    const comment = "Thanks for the coffee"; // optional param
 
     try {
-        const transferResult = await zanoServerAPI.sendTransfer(assetId, address, amount);
+        const transferResult = await zanoServerAPI.sendTransfer(assetId, address, amount, comment);
         console.log("Transfer successful:", transferResult);
     } catch (error) {
         console.error("Transfer failed:", error.message);
