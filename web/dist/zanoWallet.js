@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 class ZanoWallet {
     DEFAULT_LOCAL_STORAGE_KEY = "wallet";
     localStorageKey;
@@ -85,7 +84,7 @@ class ZanoWallet {
             publicKey = existingWallet.publicKey;
         }
         else {
-            const generatedNonce = this.params.customNonce || uuidv4();
+            const generatedNonce = this.params.customNonce;
             const signResult = await this.zanoWallet.request('REQUEST_MESSAGE_SIGN', {
                 message: generatedNonce
             }, null);

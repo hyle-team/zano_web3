@@ -4,7 +4,7 @@ export interface ZanoWalletParams {
     useLocalStorage?: boolean;
     aliasRequired?: boolean;
     customLocalStorageKey?: string;
-    customNonce?: string;
+    customNonce: string;
     customServerPath?: string;
     disableServerRequest?: boolean;
     onConnectStart?: (...params: any) => any;

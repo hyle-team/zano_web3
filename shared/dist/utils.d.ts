@@ -10,7 +10,7 @@ export type GenerateSecureMessageForSigningResult = {
     message: string;
 } | {
     success: false;
-    error: 'NONCE_TOO_SHORT';
+    error: 'NONCE_TOO_SHORT' | 'CONTROL_CHARACTERS_NOT_ALLOWED';
 };
 export declare function generateSecureMessageForSigning({ domain, address, statement, uri, nonce, expirationTime, isTestnet }: {
     domain: string;
@@ -62,8 +62,6 @@ export declare function parseSecureMessageForSigning({ message, }: {
  *
  * @returns The spend public key as a lowercase hex string, or `null` if the
  *          address is malformed (too short, checksum mismatch, or missing key).
- *          Unexpected errors (e.g. invalid base58) are not swallowed and
- *          propagate to the caller.
  */
 export declare function getPkeyFromAddress({ address }: {
     address: string;

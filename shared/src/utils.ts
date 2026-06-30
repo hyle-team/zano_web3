@@ -96,7 +96,7 @@ export type GenerateSecureMessageForSigningResult = {
     message: string;
 } | {
     success: false;
-    error: 'NONCE_TOO_SHORT';
+    error: 'NONCE_TOO_SHORT' | 'CONTROL_CHARACTERS_NOT_ALLOWED';
 }
 export function generateSecureMessageForSigning({
     domain,
@@ -115,6 +115,19 @@ export function generateSecureMessageForSigning({
     expirationTime: Date;
     isTestnet?: boolean;
 }): GenerateSecureMessageForSigningResult {
+    // C0/C1 controls (covers \n, \r, \t, NUL, DEL, …) plus Unicode line/paragraph
+    // separators (U+2028/U+2029), which split('\n') would not catch but still break
+    // the positional, line-based message layout.
+    const CONTROL_CHARS = /[\p{Cc}\p{Zl}\p{Zp}]/u;
+
+    for (const field of ['domain', 'address', 'statement', 'uri', 'nonce'] as const) {
+        const value = { domain, address, statement, uri, nonce }[field];
+
+        if (CONTROL_CHARS.test(value)) {
+            return { success: false, error: 'CONTROL_CHARACTERS_NOT_ALLOWED' };
+        }
+    }
+
     if (nonce.length < 8) {
         return {
             success: false,
@@ -308,15 +321,18 @@ function readVarint(buf: Uint8Array, start: number): [bigint, number] {
  *
  * @returns The spend public key as a lowercase hex string, or `null` if the
  *          address is malformed (too short, checksum mismatch, or missing key).
- *          Unexpected errors (e.g. invalid base58) are not swallowed and
- *          propagate to the caller.
  */
 export function getPkeyFromAddress({
     address
 }: {
     address: string
 }): string | null {
-    const blob = base58xmr.decode(address);
+    let blob: Uint8Array;
+    try {
+        blob = base58xmr.decode(address);
+    } catch {
+        return null;
+    }
 
     // Layout: varint(prefix) | data | checksum(4)
     const ADDRESS_CHECKSUM_SIZE = 4;
