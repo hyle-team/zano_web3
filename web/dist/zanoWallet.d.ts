@@ -1,9 +1,7 @@
 import { Wallet } from './types';
 export interface ZanoWalletParams {
     authPath: string;
-    useLocalStorage?: boolean;
     aliasRequired?: boolean;
-    customLocalStorageKey?: string;
     customNonce: string;
     customServerPath?: string;
     disableServerRequest?: boolean;
@@ -13,26 +11,15 @@ export interface ZanoWalletParams {
     beforeConnect?: (...params: any) => any;
     onLocalConnectEnd?: (...params: any) => any;
 }
-interface WalletCredentials {
-    nonce: string;
-    signature: string;
-    publicKey: string;
-    address: string;
-}
 type PermissionType = 'general' | 'balance' | 'history';
 interface CompanionPermission {
     type: PermissionType;
 }
 declare class ZanoWallet {
-    private DEFAULT_LOCAL_STORAGE_KEY;
-    private localStorageKey;
     private params;
     private zanoWallet;
     constructor(params: ZanoWalletParams);
     private handleError;
-    getSavedWalletCredentials(): WalletCredentials | undefined;
-    setWalletCredentials(credentials: WalletCredentials | undefined): void;
-    cleanWalletCredentials(): void;
     requestPermissions(permissions: CompanionPermission[]): Promise<any>;
     connect(): Promise<true | void>;
     getWallet(): Promise<Wallet>;

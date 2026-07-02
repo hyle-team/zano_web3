@@ -1,5 +1,6 @@
 import axios from "axios";
 import Big from "big.js";
+import JSONbig from "json-bigint";
 import {
   AuthData,
   AliasAuth,
@@ -9,6 +10,8 @@ import {
   TxInfo,
   AliasDetails,
 } from "./types";
+
+const JSONbigString = JSONbig({ storeAsString: true });
 
 import { ZANO_ASSET_ID, ZanoError } from "./utils";
 import { APIAsset, APIBalance } from "./types";
@@ -93,9 +96,11 @@ class ServerWallet {
   }
   
 
-  async fetchDaemon(method: string, params: any) {
-
-    
+  async fetchDaemon(method: string, params: any, {
+    disableLargeNumbersTransformation = false,
+  }: {
+    disableLargeNumbersTransformation?: boolean;
+  } = {}) {
     const data = {
       jsonrpc: "2.0",
       id: 0,
@@ -108,10 +113,27 @@ class ServerWallet {
       "Zano-Access-Token": this.generateAccessToken(JSON.stringify(data)),
     };
 
-    return axios.post(this.daemonUrl, data, { headers });
+    return axios.post(this.daemonUrl, data, {
+      headers,
+      transformResponse: !disableLargeNumbersTransformation 
+        ? [
+          (data) => {
+            try {
+              return JSONbigString.parse(data);
+            } catch (error) {
+              return data;
+            }
+          }
+        ] 
+        : undefined,
+    });
   }
 
-  async fetchWallet(method: string, params: any) {
+  async fetchWallet(method: string, params: any, {
+    disableLargeNumbersTransformation = false,
+  }: {
+    disableLargeNumbersTransformation?: boolean;
+  } = {}) {
 
     const data = {
       jsonrpc: "2.0",
@@ -125,7 +147,20 @@ class ServerWallet {
       "Zano-Access-Token": this.generateAccessToken(JSON.stringify(data)),
      };
 
-    return axios.post(this.walletUrl, data, { headers });
+    return axios.post(this.walletUrl, data, {
+      headers,
+      transformResponse: !disableLargeNumbersTransformation
+        ? [
+            (data) => {
+              try {
+                return JSONbigString.parse(data);
+              } catch (error) {
+                return data;
+              }
+            }
+          ]
+        : undefined,
+    });
   }
 
   async updateWalletRpcUrl(rpcUrl: string) {
@@ -211,7 +246,7 @@ class ServerWallet {
       decimalPoint = 12;
     } else {
       const asset = await this.getAssetDetails(assetId);
-      decimalPoint = asset.decimal_point;
+      decimalPoint = new Big(asset.decimal_point).toNumber();
     }
 
     try {
@@ -278,7 +313,7 @@ class ServerWallet {
         ticker: asset.asset_info.ticker,
         id: asset.asset_info.asset_id,
         amount: new Big(asset.unlocked)
-          .div(new Big(10).pow(asset.asset_info.decimal_point))
+          .div(new Big(10).pow(new Big(asset.asset_info.decimal_point).toNumber()))
           .toString(),
         awaiting_in: new Big(asset.awaiting_in).toString(),
         awaiting_out: new Big(asset.awaiting_out).toString(),
