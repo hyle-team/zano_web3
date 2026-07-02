@@ -1,5 +1,7 @@
 import axios from "axios";
 import Big from "big.js";
+import JSONbig from "json-bigint";
+const JSONbigString = JSONbig({ storeAsString: true });
 import { ZANO_ASSET_ID, ZanoError } from "./utils";
 import forge from "node-forge";
 import { getPkeyFromAddress, parseSecureMessageForSigning } from "../../shared/dist";
@@ -47,7 +49,7 @@ class ServerWallet {
         };
         return this.createJWSToken(payload, this.walletAuthToken);
     }
-    async fetchDaemon(method, params) {
+    async fetchDaemon(method, params, { disableLargeNumbersTransformation = false, } = {}) {
         const data = {
             jsonrpc: "2.0",
             id: 0,
@@ -58,9 +60,23 @@ class ServerWallet {
             "Content-Type": "application/json",
             "Zano-Access-Token": this.generateAccessToken(JSON.stringify(data)),
         };
-        return axios.post(this.daemonUrl, data, { headers });
+        return axios.post(this.daemonUrl, data, {
+            headers,
+            transformResponse: !disableLargeNumbersTransformation
+                ? [
+                    (data) => {
+                        try {
+                            return JSONbigString.parse(data);
+                        }
+                        catch (error) {
+                            return data;
+                        }
+                    }
+                ]
+                : undefined,
+        });
     }
-    async fetchWallet(method, params) {
+    async fetchWallet(method, params, { disableLargeNumbersTransformation = false, } = {}) {
         const data = {
             jsonrpc: "2.0",
             id: 0,
@@ -71,7 +87,21 @@ class ServerWallet {
             "Content-Type": "application/json",
             "Zano-Access-Token": this.generateAccessToken(JSON.stringify(data)),
         };
-        return axios.post(this.walletUrl, data, { headers });
+        return axios.post(this.walletUrl, data, {
+            headers,
+            transformResponse: !disableLargeNumbersTransformation
+                ? [
+                    (data) => {
+                        try {
+                            return JSONbigString.parse(data);
+                        }
+                        catch (error) {
+                            return data;
+                        }
+                    }
+                ]
+                : undefined,
+        });
     }
     async updateWalletRpcUrl(rpcUrl) {
         this.walletUrl = rpcUrl;
@@ -136,7 +166,7 @@ class ServerWallet {
         }
         else {
             const asset = await this.getAssetDetails(assetId);
-            decimalPoint = asset.decimal_point;
+            decimalPoint = new Big(asset.decimal_point).toNumber();
         }
         try {
             const response = await this.fetchWallet("getaddress", {});
@@ -197,7 +227,7 @@ class ServerWallet {
                 ticker: asset.asset_info.ticker,
                 id: asset.asset_info.asset_id,
                 amount: new Big(asset.unlocked)
-                    .div(new Big(10).pow(asset.asset_info.decimal_point))
+                    .div(new Big(10).pow(new Big(asset.asset_info.decimal_point).toNumber()))
                     .toString(),
                 awaiting_in: new Big(asset.awaiting_in).toString(),
                 awaiting_out: new Big(asset.awaiting_out).toString(),

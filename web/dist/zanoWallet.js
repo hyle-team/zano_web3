@@ -1,6 +1,4 @@
 class ZanoWallet {
-    DEFAULT_LOCAL_STORAGE_KEY = "wallet";
-    localStorageKey;
     params;
     zanoWallet;
     constructor(params) {
@@ -12,7 +10,6 @@ class ZanoWallet {
         }
         this.params = params;
         this.zanoWallet = window.zano;
-        this.localStorageKey = params.customLocalStorageKey || this.DEFAULT_LOCAL_STORAGE_KEY;
     }
     handleError({ message }) {
         if (this.params.onConnectError) {
@@ -21,28 +18,6 @@ class ZanoWallet {
         else {
             console.error(message);
         }
-    }
-    getSavedWalletCredentials() {
-        const savedWallet = localStorage.getItem(this.localStorageKey);
-        if (!savedWallet)
-            return undefined;
-        try {
-            return JSON.parse(savedWallet);
-        }
-        catch {
-            return undefined;
-        }
-    }
-    setWalletCredentials(credentials) {
-        if (credentials) {
-            localStorage.setItem(this.localStorageKey, JSON.stringify(credentials));
-        }
-        else {
-            localStorage.removeItem(this.localStorageKey);
-        }
-    }
-    cleanWalletCredentials() {
-        this.setWalletCredentials(undefined);
     }
     async requestPermissions(permissions) {
         try {
@@ -73,35 +48,22 @@ class ZanoWallet {
         let nonce = "";
         let signature = "";
         let publicKey = "";
-        const existingWallet = this.params.useLocalStorage ? this.getSavedWalletCredentials() : undefined;
-        const existingWalletValid = existingWallet && existingWallet.address === walletData.address;
-        console.log('existingWalletValid', existingWalletValid);
-        console.log('existingWallet', existingWallet);
-        console.log('walletData', walletData);
-        if (existingWalletValid) {
-            nonce = existingWallet.nonce;
-            signature = existingWallet.signature;
-            publicKey = existingWallet.publicKey;
+        const generatedNonce = this.params.customNonce;
+        const signResult = await this.zanoWallet.request('REQUEST_MESSAGE_SIGN', {
+            message: generatedNonce
+        }, null);
+        if (!signResult?.data?.result) {
+            return this.handleError({ message: 'Failed to sign message' });
         }
-        else {
-            const generatedNonce = this.params.customNonce;
-            const signResult = await this.zanoWallet.request('REQUEST_MESSAGE_SIGN', {
-                message: generatedNonce
-            }, null);
-            if (!signResult?.data?.result) {
-                return this.handleError({ message: 'Failed to sign message' });
-            }
-            nonce = generatedNonce;
-            signature = signResult.data.result.sig;
-            publicKey = signResult.data.result.pkey;
-        }
+        nonce = generatedNonce;
+        signature = signResult.data.result.sig;
+        publicKey = signResult.data.result.pkey;
         const serverData = {
             alias: walletData.alias,
             address: walletData.address,
             signature,
             pkey: publicKey,
-            message: nonce,
-            isSavedData: existingWalletValid
+            message: nonce
         };
         if (this.params.onLocalConnectEnd) {
             this.params.onLocalConnectEnd(serverData);
@@ -123,14 +85,6 @@ class ZanoWallet {
             }));
             if (!result?.success || !result?.data) {
                 return this.handleError({ message: result.error });
-            }
-            if (!existingWalletValid && this.params.useLocalStorage) {
-                this.setWalletCredentials({
-                    publicKey,
-                    signature,
-                    nonce,
-                    address: walletData.address
-                });
             }
             if (this.params.onConnectEnd) {
                 this.params.onConnectEnd({
