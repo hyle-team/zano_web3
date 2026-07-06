@@ -1,29 +1,46 @@
-import { Wallet } from './types';
-export interface ZanoWalletParams {
-    authPath: string;
-    aliasRequired?: boolean;
-    customNonce: string;
-    customServerPath?: string;
-    disableServerRequest?: boolean;
-    onConnectStart?: (...params: any) => any;
-    onConnectEnd?: (...params: any) => any;
-    onConnectError?: (...params: any) => any;
-    beforeConnect?: (...params: any) => any;
-    onLocalConnectEnd?: (...params: any) => any;
-}
-type PermissionType = 'general' | 'balance' | 'history';
-interface CompanionPermission {
-    type: PermissionType;
-}
+import { RequestPermissionsResponse, GetAddressByAliasResponse, CreateAliasResponse, RequestMessageSignResponse, CompanionPermissionsParam } from './types';
 declare class ZanoWallet {
-    private params;
-    private zanoWallet;
-    constructor(params: ZanoWalletParams);
-    private handleError;
-    requestPermissions(permissions: CompanionPermission[]): Promise<any>;
-    connect(): Promise<true | void>;
-    getWallet(): Promise<Wallet>;
-    getAddressByAlias(alias: string): Promise<string | undefined>;
-    createAlias(alias: string): Promise<any>;
+    private getZanoWallet;
+    requestPermissions: (permissions: CompanionPermissionsParam[]) => Promise<RequestPermissionsResponse>;
+    getWallet: () => Promise<{
+        success: boolean;
+        error: string;
+        data?: undefined;
+    } | {
+        success: boolean;
+        data: {
+            address: string;
+            alias: string;
+            balance: string;
+            assets: {
+                name: string;
+                ticker: string;
+                assetId: string;
+                decimalPoint: number;
+                balance: string;
+                unlockedBalance: string;
+            }[];
+            transactions: {
+                isConfirmed: boolean;
+                txHash: string;
+                blobSize: number;
+                timestamp: number;
+                height: number;
+                paymentId: string;
+                comment: string;
+                fee: string;
+                isInitiator: boolean;
+                transfers: {
+                    amount: string;
+                    assetId: string;
+                    incoming: boolean;
+                }[];
+            }[];
+        };
+        error?: undefined;
+    }>;
+    getAddressByAlias: (alias: string) => Promise<GetAddressByAliasResponse>;
+    createAlias: (alias: string) => Promise<CreateAliasResponse>;
+    requestMessageSign: (message: string) => Promise<RequestMessageSignResponse>;
 }
 export default ZanoWallet;

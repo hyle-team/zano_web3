@@ -1,0 +1,1 @@
+export { CompanionPermission, CompanionPermissionsParam, PermissionType } from './request-permissions';

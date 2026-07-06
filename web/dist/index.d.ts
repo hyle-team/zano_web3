@@ -1,5 +1,3 @@
-import zanoWallet from "./zanoWallet";
-import { useZanoWallet } from "./hooks";
-export { useZanoWallet };
+import ZanoWallet from "./zanoWallet";
 export * from "./types";
-export { zanoWallet };
+export { ZanoWallet };

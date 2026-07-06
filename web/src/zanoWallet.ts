@@ -1,183 +1,160 @@
-import { Wallet } from './types';
-
-export interface ZanoWalletParams {
-    authPath: string;
-    aliasRequired?: boolean;
-    customNonce: string;
-    customServerPath?: string;
-    disableServerRequest?: boolean;
-
-    onConnectStart?: (...params: any) => any;
-    onConnectEnd?: (...params: any) => any;
-    onConnectError?: (...params: any) => any;
-
-    beforeConnect?: (...params: any) => any;
-    onLocalConnectEnd?: (...params: any) => any;
-}
-
-type GlobalWindow = Window & typeof globalThis;
-
-interface ZanoWindowParams {
-    request: (str: string, params?: any, timeoutMs?: number | null) => Promise<any>;
-}
-
-type ZanoWindow = Omit<GlobalWindow, 'Infinity'> & {
-    zano: ZanoWindowParams
-}
-
-interface WalletCredentials {
-    nonce: string;
-    signature: string;
-    publicKey: string;
-    address: string;
-}
-
-type PermissionType =
-    | 'general'
-    | 'balance'
-    | 'history'
-
-interface CompanionPermission {
-    type: PermissionType;
-}
+import { 
+    ZanoWebError,
+    RequestPermissionsResponse,
+    GetAddressByAliasResponse,
+    CreateAliasResponse,
+    RequestMessageSignResponse,
+    CompanionPermissionsParam,
+} from './types';
+import { createAliasCompanionResponseSchema } from './types/responses/companion-methods/create-alias';
+import { getAddressByAliasCompanionResponseSchema } from './types/responses/companion-methods/get-address-by-alias';
+import { getWalletDataCompanionResponseSchema } from './types/responses/companion-methods/get-wallet-data';
+import { requestMessageSignCompanionResponseSchema } from './types/responses/companion-methods/request-message-sign';
+import { requestPermissionsCompanionResponseSchema } from './types/responses/companion-methods/request-permissions';
+import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
 
 class ZanoWallet {
-    private params: ZanoWalletParams;
-    private zanoWallet: ZanoWindowParams;
-
-    constructor(params: ZanoWalletParams) {
-
-        if (typeof window === 'undefined') {
-            throw new Error('ZanoWallet can only be used in the browser');
-        }
-
-        if (!((window as unknown) as ZanoWindow).zano) {
-            console.error('ZanoWallet requires the ZanoWallet extension to be installed');
-        }
-
-        this.params = params;
-        this.zanoWallet = ((window as unknown) as ZanoWindow).zano;
-    }
-
-
-    private handleError({ message }: { message: string }) {
-        if (this.params.onConnectError) {
-            this.params.onConnectError(message);
-        } else {
-            console.error(message);
-        }
-    }
-
-    async requestPermissions(permissions: CompanionPermission[]) {
-        try {
-            return await this.zanoWallet.request('REQUEST_ACCESS', {
-                permissions,
+    private getZanoWallet = (): ZanoWindowObject => {
+        const zanoWindow = window as unknown as ZanoWindow;
+        
+        if (!zanoWindow.zano) {
+            throw new ZanoWebError({
+                message: 'Zano wallet is not available in the current window context.',
+                code: 'ZANO_WALLET_NOT_AVAILABLE',
             });
-        } catch (error) {
+        }
+        
+        return zanoWindow.zano;
+    }
+
+    requestPermissions = async (permissions: CompanionPermissionsParam[]): Promise<RequestPermissionsResponse> => {
+        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_ACCESS', {
+            permissions,
+        });
+
+        const companionResponseParsingResult = requestPermissionsCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('success' in companionResponse)) {
             return {
-                error: error instanceof Error ? error.message : String(error),
+                success: false,
+                error: companionResponse.error,
             };
         }
+
+        return {
+            success: true,
+        };
     }
 
-    async connect() {
-        if (this.params.beforeConnect) {
-            await this.params.beforeConnect();
+    getWallet = async () => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_DATA');
+        
+        const companionResponseParsingResult = getWalletDataCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
         }
 
-        if (this.params.onConnectStart) {
-            this.params.onConnectStart();
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
         }
 
-        const walletData = (await ((window as unknown) as ZanoWindow).zano.request('GET_WALLET_DATA')).data;
-
-
-        if (!walletData?.address) {
-            return this.handleError({ message: 'Companion is offline' });
-        }
-
-        if (!walletData?.alias && this.params.aliasRequired) {
-            return this.handleError({ message: 'Alias not found' });
-        }
-
-        let nonce = "";
-        let signature = "";
-        let publicKey = "";
-
-        const generatedNonce = this.params.customNonce;
-
-        const signResult = await this.zanoWallet.request(
-            'REQUEST_MESSAGE_SIGN',
-            {
-                message: generatedNonce
-            },
-            null
-        );
-
-        if (!signResult?.data?.result) {
-            return this.handleError({ message: 'Failed to sign message' });
-        }
-
-        nonce = generatedNonce;
-        signature = signResult.data.result.sig;
-        publicKey = signResult.data.result.pkey;
-
-        const serverData = {
-            alias: walletData.alias,
-            address: walletData.address,
-            signature,
-            pkey: publicKey,
-            message: nonce
-        }
-
-        if (this.params.onLocalConnectEnd) {
-            this.params.onLocalConnectEnd(serverData);
-        }
-
-
-        if (!this.params.disableServerRequest) {
-            const result = await fetch(this.params.customServerPath || "/api/auth", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(
-                    {
-                        data: serverData
-                    }
-                )
-            })
-                .then(res => res.json())
-                .catch((e) => ({
-                    success: false,
-                    error: e.message
-                }));
-
-            if (!result?.success || !result?.data) {
-                return this.handleError({ message: result.error });
-            }
-
-            if (this.params.onConnectEnd) {
-                this.params.onConnectEnd({
-                    ...serverData,
-                    token: result.data.token
-                });
-            }
-        }
-
-        return true;
+        return {
+            success: true,
+            data: companionResponse.data,
+        };
     }
 
-    async getWallet() {
-        return (await this.zanoWallet.request('GET_WALLET_DATA'))?.data as Wallet;
+    getAddressByAlias = async (alias: string): Promise<GetAddressByAliasResponse> => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_ALIAS_DETAILS', { alias });
+
+        const companionResponseParsingResult = getAddressByAliasCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (typeof companionResponse !== 'string') {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        return {
+            success: true,
+            data: companionResponse,
+        };
     }
 
-    async getAddressByAlias(alias: string) {
-        return ((await this.zanoWallet.request('GET_ALIAS_DETAILS', { alias })) || undefined) as string | undefined;
+    createAlias = async (alias: string): Promise<CreateAliasResponse> => {
+        const companionResponseRaw = await this.getZanoWallet().request('CREATE_ALIAS', { alias });
+
+        const companionResponseParsingResult = createAliasCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        return {
+            success: true,
+        };
     }
 
-    async createAlias(alias: string) {
-        return ((await this.zanoWallet.request('CREATE_ALIAS', { alias })) || undefined).data;
+    requestMessageSign = async (message: string): Promise<RequestMessageSignResponse> => {
+        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_MESSAGE_SIGN', { message });
+
+        const companionResponseParsingResult = requestMessageSignCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        return {
+            success: true,
+            data: companionResponse.data.result,
+        };
     }
 }
 
