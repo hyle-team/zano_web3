@@ -1,4 +1,4 @@
-import ZanoWallet from "./zanoWallet";
+import ZanoWallet from "./zano-wallet";
 
 export * from "./types";
 export { ZanoWallet };
