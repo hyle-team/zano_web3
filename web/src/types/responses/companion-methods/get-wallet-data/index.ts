@@ -2,8 +2,8 @@ import z from "zod";
 
 const getWalletDataCompanionResponseWalletSchema = z.object({
     address: z.string(),
-    alias: z.string().optional(),
-    balance: z.string(),
+    alias: z.string(),
+    balance: z.string().optional(),
     assets: z.array(z.object({
         name: z.string(),
         ticker: z.string(),
@@ -11,7 +11,7 @@ const getWalletDataCompanionResponseWalletSchema = z.object({
         decimalPoint: z.number(),
         balance: z.string(),
         unlockedBalance: z.string(),
-    })),
+    })).optional(),
     transactions: z.array(z.object({
         isConfirmed: z.boolean(),
         txHash: z.string(),
@@ -27,7 +27,7 @@ const getWalletDataCompanionResponseWalletSchema = z.object({
             assetId: z.string(),
             incoming: z.boolean(),
         })),
-    })),
+    })).optional(),
 });
 
 export type GetWalletDataResponseWallet = z.infer<typeof getWalletDataCompanionResponseWalletSchema>;
