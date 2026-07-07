@@ -1,17 +1,17 @@
 import z from "zod";
 declare const getWalletDataCompanionResponseWalletSchema: z.ZodObject<{
     address: z.ZodString;
-    alias: z.ZodOptional<z.ZodString>;
-    balance: z.ZodString;
-    assets: z.ZodArray<z.ZodObject<{
+    alias: z.ZodString;
+    balance: z.ZodOptional<z.ZodString>;
+    assets: z.ZodOptional<z.ZodArray<z.ZodObject<{
         name: z.ZodString;
         ticker: z.ZodString;
         assetId: z.ZodString;
         decimalPoint: z.ZodNumber;
         balance: z.ZodString;
         unlockedBalance: z.ZodString;
-    }, z.core.$strip>>;
-    transactions: z.ZodArray<z.ZodObject<{
+    }, z.core.$strip>>>;
+    transactions: z.ZodOptional<z.ZodArray<z.ZodObject<{
         isConfirmed: z.ZodBoolean;
         txHash: z.ZodString;
         blobSize: z.ZodCustom<number, number>;
@@ -26,23 +26,23 @@ declare const getWalletDataCompanionResponseWalletSchema: z.ZodObject<{
             assetId: z.ZodString;
             incoming: z.ZodBoolean;
         }, z.core.$strip>>;
-    }, z.core.$strip>>;
+    }, z.core.$strip>>>;
 }, z.core.$strip>;
 export type GetWalletDataResponseWallet = z.infer<typeof getWalletDataCompanionResponseWalletSchema>;
 export declare const getWalletDataCompanionResponseSchema: z.ZodUnion<readonly [z.ZodObject<{
     data: z.ZodObject<{
         address: z.ZodString;
-        alias: z.ZodOptional<z.ZodString>;
-        balance: z.ZodString;
-        assets: z.ZodArray<z.ZodObject<{
+        alias: z.ZodString;
+        balance: z.ZodOptional<z.ZodString>;
+        assets: z.ZodOptional<z.ZodArray<z.ZodObject<{
             name: z.ZodString;
             ticker: z.ZodString;
             assetId: z.ZodString;
             decimalPoint: z.ZodNumber;
             balance: z.ZodString;
             unlockedBalance: z.ZodString;
-        }, z.core.$strip>>;
-        transactions: z.ZodArray<z.ZodObject<{
+        }, z.core.$strip>>>;
+        transactions: z.ZodOptional<z.ZodArray<z.ZodObject<{
             isConfirmed: z.ZodBoolean;
             txHash: z.ZodString;
             blobSize: z.ZodCustom<number, number>;
@@ -57,7 +57,7 @@ export declare const getWalletDataCompanionResponseSchema: z.ZodUnion<readonly [
                 assetId: z.ZodString;
                 incoming: z.ZodBoolean;
             }, z.core.$strip>>;
-        }, z.core.$strip>>;
+        }, z.core.$strip>>>;
     }, z.core.$strip>;
 }, z.core.$strip>, z.ZodObject<{
     error: z.ZodString;
