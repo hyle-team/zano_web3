@@ -27,7 +27,7 @@ class ZanoWallet {
         return zanoWindow.zano;
     }
 
-    requestPermissions = async (permissions: CompanionPermissionsParam[]): Promise<RequestPermissionsResponse> => {
+    requestPermissions = async (permissions: CompanionPermissionsParam): Promise<RequestPermissionsResponse> => {
         const companionResponseRaw = await this.getZanoWallet().request('REQUEST_ACCESS', {
             permissions,
         });
