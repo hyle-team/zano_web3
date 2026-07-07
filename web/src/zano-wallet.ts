@@ -8,7 +8,7 @@ import {
 } from './types';
 import { createAliasCompanionResponseSchema } from './types/responses/companion-methods/create-alias';
 import { getAddressByAliasCompanionResponseSchema } from './types/responses/companion-methods/get-address-by-alias';
-import { getWalletDataCompanionResponseSchema } from './types/responses/companion-methods/get-wallet-data';
+import { getWalletDataCompanionResponseSchema, GetWalletDataResponse } from './types/responses/companion-methods/get-wallet-data';
 import { requestMessageSignCompanionResponseSchema } from './types/responses/companion-methods/request-message-sign';
 import { requestPermissionsCompanionResponseSchema } from './types/responses/companion-methods/request-permissions';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
@@ -54,7 +54,7 @@ class ZanoWallet {
         };
     }
 
-    getWallet = async () => {
+    getWallet = async (): Promise<GetWalletDataResponse> => {
         const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_DATA');
         
         const companionResponseParsingResult = getWalletDataCompanionResponseSchema.safeParse(companionResponseRaw);
