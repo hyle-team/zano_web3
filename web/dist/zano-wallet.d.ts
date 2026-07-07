@@ -1,7 +1,7 @@
 import { RequestPermissionsResponse, GetAddressByAliasResponse, CreateAliasResponse, RequestMessageSignResponse, CompanionPermissionsParam } from './types';
 declare class ZanoWallet {
     private getZanoWallet;
-    requestPermissions: (permissions: CompanionPermissionsParam[]) => Promise<RequestPermissionsResponse>;
+    requestPermissions: (permissions: CompanionPermissionsParam) => Promise<RequestPermissionsResponse>;
     getWallet: () => Promise<{
         success: boolean;
         error: string;
