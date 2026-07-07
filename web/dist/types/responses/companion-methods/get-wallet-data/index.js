@@ -1,7 +1,7 @@
 import z from "zod";
 const getWalletDataCompanionResponseWalletSchema = z.object({
     address: z.string(),
-    alias: z.string(),
+    alias: z.string().optional(),
     balance: z.string(),
     assets: z.array(z.object({
         name: z.string(),

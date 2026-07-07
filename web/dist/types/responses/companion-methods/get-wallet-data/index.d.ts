@@ -1,7 +1,7 @@
 import z from "zod";
 declare const getWalletDataCompanionResponseWalletSchema: z.ZodObject<{
     address: z.ZodString;
-    alias: z.ZodString;
+    alias: z.ZodOptional<z.ZodString>;
     balance: z.ZodString;
     assets: z.ZodArray<z.ZodObject<{
         name: z.ZodString;
@@ -32,7 +32,7 @@ export type GetWalletDataResponseWallet = z.infer<typeof getWalletDataCompanionR
 export declare const getWalletDataCompanionResponseSchema: z.ZodUnion<readonly [z.ZodObject<{
     data: z.ZodObject<{
         address: z.ZodString;
-        alias: z.ZodString;
+        alias: z.ZodOptional<z.ZodString>;
         balance: z.ZodString;
         assets: z.ZodArray<z.ZodObject<{
             name: z.ZodString;
