@@ -122,4 +122,4 @@ class ZanoWallet {
     };
 }
 export default ZanoWallet;
-//# sourceMappingURL=zanoWallet.js.map
+//# sourceMappingURL=zano-wallet.js.map
