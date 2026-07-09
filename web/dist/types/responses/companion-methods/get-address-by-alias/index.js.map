@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../../../src/types/responses/companion-methods/get-address-by-alias/index.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,MAAM,KAAK,CAAC;AAEpB,MAAM,CAAC,MAAM,wCAAwC,GAAG,CAAC,CAAC,KAAK,CAAC;IAC5D,CAAC,CAAC,MAAM,EAAE;IACV,CAAC,CAAC,MAAM,CAAC;QACL,KAAK,EAAE,CAAC,CAAC,MAAM,EAAE;KACpB,CAAC;CACL,CAAC,CAAC"}
