@@ -1,10 +1,17 @@
+
+export type CompanionRequestAccessParams = {
+    permissions: {
+        type: 'general' | 'balance' | 'history';
+    }[];
+}
+
 export type PermissionType =
     | 'general'
     | 'balance'
     | 'history'
 
-export interface CompanionPermission {
+export interface Permission {
     type: PermissionType;
 }
 
-export type CompanionPermissionsParam = CompanionPermission[];
+export type PermissionsParam = Permission[];
