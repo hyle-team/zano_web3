@@ -5,4 +5,8 @@ export const getWalletRPCErrorCode = (errorCode) => {
     }
     return `WALLET_RPC_ERROR_${errorCode}`;
 };
+export const getWalletRPCErrorCodeByStatus = (status) => {
+    return `WALLET_RPC_ERROR_STATUS_${status}`;
+};
+export const NON_NEGATIVE_REAL_NUMBER_REGEX = /^\d+(\.\d+)?$/;
 //# sourceMappingURL=index.js.map
