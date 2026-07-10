@@ -9,6 +9,7 @@ import {
     InitializeIonicSwapParams,
     InitializeIonicSwapResponse,
     AcceptIonicSwapResponse,
+    GetPermissionsResponse,
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
 import { WALLET_RPC_GENERIC_ERROR_CODE } from './constants';
@@ -27,6 +28,7 @@ import { CompanionRequestMessageSignParams } from './types/params/companion-requ
 import { initializeIonicSwapCompanionResponseSchema } from './types/responses/companion-methods/initialize-ionic-swap';
 import { CompanionAcceptIonicSwapParams } from './types/params/companion-requests/accept-ionic-swap';
 import { acceptIonicSwapCompanionResponseSchema } from './types/responses/companion-methods/accept-ionic-swap';
+import { getPermissionsCompanionResponseSchema } from './types/responses/companion-methods/get-permissions';
 
 class ZanoWallet {
     private getZanoWallet = (): ZanoWindowObject => {
@@ -331,6 +333,34 @@ class ZanoWallet {
             success: true,
             data: {
                 result_tx_id: companionResponse.data.result.result_tx_id,
+            },
+        };
+    }
+
+    getPermissions = async (): Promise<GetPermissionsResponse> => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_PERMISSIONS');
+
+        const companionResponseParsingResult = getPermissionsCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        return {
+            success: true,
+            data: {
+                permissions: companionResponse.data,
             },
         };
     }
