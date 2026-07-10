@@ -11,6 +11,8 @@ import {
     AcceptIonicSwapResponse,
     GetPermissionsResponse,
     GetWalletBalanceResponse,
+    TransferParams,
+    TransferResponse,
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
 import { WALLET_RPC_GENERIC_ERROR_CODE } from './constants';
@@ -31,6 +33,8 @@ import { CompanionAcceptIonicSwapParams } from './types/params/companion-request
 import { acceptIonicSwapCompanionResponseSchema } from './types/responses/companion-methods/accept-ionic-swap';
 import { getPermissionsCompanionResponseSchema } from './types/responses/companion-methods/get-permissions';
 import { getWalletBalanceCompanionResponseSchema } from './types/responses/companion-methods/get-wallet-balance';
+import { CompanionTransferParams } from './types/params/companion-requests/transfer';
+import { transferCompanionResponseSchema } from './types/responses/companion-methods/transfer';
 
 class ZanoWallet {
     private getZanoWallet = (): ZanoWindowObject => {
@@ -371,6 +375,40 @@ class ZanoWallet {
         const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_BALANCE');
 
         const companionResponseParsingResult = getWalletBalanceCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
+            };
+        }
+
+        return {
+            success: true,
+            data: companionResponse.data.result,
+        };
+    }
+
+    transfer = async (params: TransferParams): Promise<TransferResponse> => {
+        const companionRequestParams: CompanionTransferParams = params;
+
+        const companionResponseRaw = await this.getZanoWallet().request('TRANSFER', companionRequestParams);
+        const companionResponseParsingResult = transferCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
                 message: 'Failed to parse companion response.',
