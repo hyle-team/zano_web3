@@ -412,6 +412,60 @@ class ZanoWallet {
     }
 
     transfer = async (params: TransferParams): Promise<TransferResponse> => {
+        
+        // Validation of params
+        if ('amount' in params) {
+            let amountDecimal: Decimal | null;
+
+            try {
+                amountDecimal = new Decimal(params.amount);
+            } catch (error) {
+                if (error instanceof Error && /DecimalError/.test(error.message)) {
+                    amountDecimal = null;
+                } else {
+                    throw error;
+                }
+            }
+
+            const isAmountValid =
+                amountDecimal !== null &&
+                amountDecimal.isFinite() &&
+                amountDecimal.gt(0);
+
+            if (!isAmountValid) {
+                throw new ZanoWebError({
+                    message: 'Invalid transfer amount provided. Amount must be a valid, finite number greater than zero.',
+                    code: 'INVALID_TRANSFER_AMOUNT',
+                });
+            }
+        } else {
+            for (const destination of params.destinations) {
+                let amountDecimal: Decimal | null;
+
+                try {
+                    amountDecimal = new Decimal(destination.amount);
+                } catch (error) {
+                    if (error instanceof Error && /DecimalError/.test(error.message)) {
+                        amountDecimal = null;
+                    } else {
+                        throw error;
+                    }
+                }
+
+                const isAmountValid =
+                    amountDecimal !== null &&
+                    amountDecimal.isFinite() &&
+                    amountDecimal.gt(0);
+
+                if (!isAmountValid) {
+                    throw new ZanoWebError({
+                        message: `Invalid transfer amount provided for destination ${destination.address}. Amount must be a valid, finite number greater than zero.`,
+                        code: 'INVALID_TRANSFER_AMOUNT',
+                    });
+                }
+            }
+        }
+        
         const companionRequestParams: CompanionTransferParams = params;
 
         const companionResponseRaw = await this.getZanoWallet().request('TRANSFER', companionRequestParams, null);
