@@ -3,3 +3,5 @@ export { GetWalletDataResponse, GetWalletDataResponseWallet } from './get-wallet
 export { GetAddressByAliasResponse } from './get-address-by-alias';
 export { CreateAliasResponse } from './create-alias';
 export { RequestMessageSignResponse, RequestMessageSignData } from './request-message-sign';
+export { InitializeIonicSwapResponse } from './initialize-ionic-swap';
+export { AcceptIonicSwapResponse } from './accept-ionic-swap';

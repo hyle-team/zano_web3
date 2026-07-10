@@ -8,6 +8,7 @@ import {
     PermissionsParam,
     InitializeIonicSwapParams,
     InitializeIonicSwapResponse,
+    AcceptIonicSwapResponse,
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
 import { WALLET_RPC_GENERIC_ERROR_CODE } from './constants';
@@ -24,6 +25,8 @@ import { CompanionGetAddressByAliasParams } from './types/params/companion-reque
 import { CompanionCreateAliasParams } from './types/params/companion-requests/create-alias';
 import { CompanionRequestMessageSignParams } from './types/params/companion-requests/request-message-sign';
 import { initializeIonicSwapCompanionResponseSchema } from './types/responses/companion-methods/initialize-ionic-swap';
+import { CompanionAcceptIonicSwapParams } from './types/params/companion-requests/accept-ionic-swap';
+import { acceptIonicSwapCompanionResponseSchema } from './types/responses/companion-methods/accept-ionic-swap';
 
 class ZanoWallet {
     private getZanoWallet = (): ZanoWindowObject => {
@@ -292,6 +295,43 @@ class ZanoWallet {
         return {
             success: true,
             data: companionResponse.data.result.hex_raw_proposal,
+        };
+    }
+
+    acceptIonicSwap = async (hexRawProposal: string): Promise<AcceptIonicSwapResponse> => {
+        const companionRequestParams: CompanionAcceptIonicSwapParams = { hex_raw_proposal: hexRawProposal };
+
+        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP_ACCEPT', companionRequestParams);
+
+        const companionResponseParsingResult = acceptIonicSwapCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
+            };
+        }
+
+        return {
+            success: true,
+            data: {
+                result_tx_id: companionResponse.data.result.result_tx_id,
+            },
         };
     }
 }

@@ -1,10 +1,17 @@
 import z from 'zod';
-const requestMessageSignCompanionResponseDataSchema = z.object({
-    result: z.object({
-        pkey: z.string(),
-        sig: z.string(),
-    })
-});
+const requestMessageSignCompanionResponseDataSchema = z.union([
+    z.object({
+        result: z.object({
+            pkey: z.string(),
+            sig: z.string(),
+        })
+    }),
+    z.object({
+        error: z.object({
+            code: z.number().optional(),
+        })
+    }),
+]);
 export const requestMessageSignCompanionResponseSchema = z.union([
     z.object({
         data: requestMessageSignCompanionResponseDataSchema,
