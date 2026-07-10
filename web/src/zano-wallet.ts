@@ -58,7 +58,7 @@ class ZanoWallet {
             })),
         }
 
-        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_ACCESS', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_ACCESS', companionRequestParams, null);
 
         const companionResponseParsingResult = requestPermissionsCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -83,7 +83,7 @@ class ZanoWallet {
     }
 
     getWallet = async (): Promise<GetWalletDataResponse> => {
-        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_DATA');
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_DATA', {}, null);
         
         const companionResponseParsingResult = getWalletDataCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -111,7 +111,7 @@ class ZanoWallet {
     getAddressByAlias = async (alias: string): Promise<GetAddressByAliasResponse> => {
         const companionRequestParams: CompanionGetAddressByAliasParams = { alias };
 
-        const companionResponseRaw = await this.getZanoWallet().request('GET_ALIAS_DETAILS', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('GET_ALIAS_DETAILS', companionRequestParams, null);
 
         const companionResponseParsingResult = getAddressByAliasCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -146,7 +146,7 @@ class ZanoWallet {
     createAlias = async (alias: string): Promise<CreateAliasResponse> => {
         const companionRequestParams: CompanionCreateAliasParams = { alias };
 
-        const companionResponseRaw = await this.getZanoWallet().request('CREATE_ALIAS', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('CREATE_ALIAS', companionRequestParams, null);
 
         const companionResponseParsingResult = createAliasCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -183,7 +183,7 @@ class ZanoWallet {
     requestMessageSign = async (message: string): Promise<RequestMessageSignResponse> => {
         const companionRequestParams: CompanionRequestMessageSignParams = { message };
 
-        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_MESSAGE_SIGN', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_MESSAGE_SIGN', companionRequestParams, null);
 
         const companionResponseParsingResult = requestMessageSignCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -274,7 +274,7 @@ class ZanoWallet {
             destinationAddress
         }
 
-        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP', companionRequestParams, null);
 
         const companionResponseParsingResult = initializeIonicSwapCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -309,7 +309,7 @@ class ZanoWallet {
     acceptIonicSwap = async (hexRawProposal: string): Promise<AcceptIonicSwapResponse> => {
         const companionRequestParams: CompanionAcceptIonicSwapParams = { hex_raw_proposal: hexRawProposal };
 
-        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP_ACCEPT', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP_ACCEPT', companionRequestParams, null);
 
         const companionResponseParsingResult = acceptIonicSwapCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -344,7 +344,7 @@ class ZanoWallet {
     }
 
     getPermissions = async (): Promise<GetPermissionsResponse> => {
-        const companionResponseRaw = await this.getZanoWallet().request('GET_PERMISSIONS');
+        const companionResponseRaw = await this.getZanoWallet().request('GET_PERMISSIONS', {}, null);
 
         const companionResponseParsingResult = getPermissionsCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -372,7 +372,7 @@ class ZanoWallet {
     }
 
     getWalletBalance = async (): Promise<GetWalletBalanceResponse> => {
-        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_BALANCE');
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_BALANCE', {}, null);
 
         const companionResponseParsingResult = getWalletBalanceCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
@@ -407,7 +407,7 @@ class ZanoWallet {
     transfer = async (params: TransferParams): Promise<TransferResponse> => {
         const companionRequestParams: CompanionTransferParams = params;
 
-        const companionResponseRaw = await this.getZanoWallet().request('TRANSFER', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('TRANSFER', companionRequestParams, null);
         const companionResponseParsingResult = transferCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
