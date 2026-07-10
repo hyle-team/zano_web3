@@ -8,3 +8,4 @@ export { AcceptIonicSwapResponse } from './accept-ionic-swap';
 export { GetPermissionsResponse, GetPermissionsResponsePermission } from './get-permissions';
 export { GetWalletBalanceResponse, GetWalletBalanceResponseBalance } from './get-wallet-balance';
 export { TransferResponse, TransferResponseInfo } from './transfer';
+export { GetIonicSwapProposalInfoResponse, GetIonicSwapProposalInfoResponseInfo } from './get-ionic-swap-info';
