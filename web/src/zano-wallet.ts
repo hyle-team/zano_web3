@@ -14,6 +14,7 @@ import {
     TransferParams,
     TransferResponse,
     GetIonicSwapProposalInfoResponse,
+    GetWhitelistResponse
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
 import { WALLET_RPC_GENERIC_ERROR_CODE } from './constants';
@@ -38,6 +39,7 @@ import { CompanionTransferParams } from './types/params/companion-requests/trans
 import { transferCompanionResponseSchema } from './types/responses/companion-methods/transfer';
 import { CompanionGetIonicSwapInfoParams } from './types/params/companion-requests/get-ionic-swap-info';
 import { getIonicSwapProposalInfoCompanionResponseSchema } from './types/responses/companion-methods/get-ionic-swap-info';
+import { getWhitelistCompanionResponseSchema } from './types/responses/companion-methods/get-whitelist';
 
 class ZanoWallet {
     private getZanoWallet = (): ZanoWindowObject => {
@@ -473,6 +475,32 @@ class ZanoWallet {
         return {
             success: true,
             data: companionResponse.data.result,
+        };
+    }
+
+    getWhitelist = async (): Promise<GetWhitelistResponse> => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WHITELIST', {}, null);
+
+        const companionResponseParsingResult = getWhitelistCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        return {
+            success: true,
+            data: companionResponse.data,
         };
     }
 }
