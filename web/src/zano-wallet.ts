@@ -236,54 +236,25 @@ class ZanoWallet {
         destinationAddress
     }: InitializeIonicSwapParams): Promise<InitializeIonicSwapResponse> => {
 
-        let destinationAssetAmountDecimal: Decimal | null;
-
-        try {
-            destinationAssetAmountDecimal = new Decimal(destinationAssetAmount);
-        } catch (error) {
-            if (error instanceof Error && /DecimalError/.test(error.message)) {
-                destinationAssetAmountDecimal = null;
-            } else {
-                throw error;
-            }
-        }
-
-        let currentAssetAmountDecimal: Decimal | null;
-
-        try {
-            currentAssetAmountDecimal = new Decimal(currentAssetAmount);
-        } catch (error) {
-            if (error instanceof Error && /DecimalError/.test(error.message)) {
-                currentAssetAmountDecimal = null;
-            } else {
-                throw error;
-            }
-        }
+        const destinationAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(destinationAssetAmount);
+        const currentAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(currentAssetAmount);
 
         const areNumbersValid = 
-            destinationAssetAmountDecimal !== null &&
-            currentAssetAmountDecimal !== null &&
-            destinationAssetAmountDecimal.isFinite() &&
-            currentAssetAmountDecimal.isFinite() &&
-            destinationAssetAmountDecimal.gt(0) &&
-            currentAssetAmountDecimal.gt(0);
+            destinationAmountValidationResult.success &&
+            currentAmountValidationResult.success;
 
-        if (
-            !areNumbersValid ||
-            destinationAssetAmountDecimal === null ||
-            currentAssetAmountDecimal === null
-        ) {
+        if (!areNumbersValid) {
             throw new ZanoWebError({
                 message: 'Invalid asset amounts provided. Both destinationAssetAmount and currentAssetAmount must be valid, finite, and greater than zero.',
-                code: 'INVALID_ASSET_AMOUNTS',
+                code: 'INVALID_PARAMS',
             });
         }
 
         const companionRequestParams: CompanionIonicSwapParams = {
             destinationAssetID,
-            destinationAssetAmount: destinationAssetAmountDecimal.toString(),
+            destinationAssetAmount,
             currentAssetID,
-            currentAssetAmount: currentAssetAmountDecimal.toString(),
+            currentAssetAmount,
             destinationAddress
         }
 
@@ -418,55 +389,25 @@ class ZanoWallet {
     }
 
     transfer = async (params: TransferParams): Promise<TransferResponse> => {
-        
+
         // Validation of params
         if ('amount' in params) {
-            let amountDecimal: Decimal | null;
-
-            try {
-                amountDecimal = new Decimal(params.amount);
-            } catch (error) {
-                if (error instanceof Error && /DecimalError/.test(error.message)) {
-                    amountDecimal = null;
-                } else {
-                    throw error;
-                }
-            }
-
-            const isAmountValid =
-                amountDecimal !== null &&
-                amountDecimal.isFinite() &&
-                amountDecimal.gt(0);
-
-            if (!isAmountValid) {
+            const amountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(params.amount);
+            
+            if (!amountValidationResult.success) {
                 throw new ZanoWebError({
                     message: 'Invalid transfer amount provided. Amount must be a valid, finite number greater than zero.',
-                    code: 'INVALID_TRANSFER_AMOUNT',
+                    code: 'INVALID_PARAMS',
                 });
             }
         } else {
             for (const destination of params.destinations) {
-                let amountDecimal: Decimal | null;
+                const amountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(destination.amount);
 
-                try {
-                    amountDecimal = new Decimal(destination.amount);
-                } catch (error) {
-                    if (error instanceof Error && /DecimalError/.test(error.message)) {
-                        amountDecimal = null;
-                    } else {
-                        throw error;
-                    }
-                }
-
-                const isAmountValid =
-                    amountDecimal !== null &&
-                    amountDecimal.isFinite() &&
-                    amountDecimal.gt(0);
-
-                if (!isAmountValid) {
+                if (!amountValidationResult.success) {
                     throw new ZanoWebError({
-                        message: `Invalid transfer amount provided for destination ${destination.address}. Amount must be a valid, finite number greater than zero.`,
-                        code: 'INVALID_TRANSFER_AMOUNT',
+                        message: `Invalid transfer amount provided. Amount must be a valid, finite number greater than zero.`,
+                        code: 'INVALID_PARAMS',
                     });
                 }
             }
