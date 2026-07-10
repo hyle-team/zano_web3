@@ -6,3 +6,4 @@ export { RequestMessageSignResponse, RequestMessageSignData } from './request-me
 export { InitializeIonicSwapResponse } from './initialize-ionic-swap';
 export { AcceptIonicSwapResponse } from './accept-ionic-swap';
 export { GetPermissionsResponse, GetPermissionsResponsePermission } from './get-permissions';
+export { GetWalletBalanceResponse, GetWalletBalanceResponseBalance } from './get-wallet-balance';

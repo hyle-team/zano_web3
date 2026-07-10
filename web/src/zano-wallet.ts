@@ -10,6 +10,7 @@ import {
     InitializeIonicSwapResponse,
     AcceptIonicSwapResponse,
     GetPermissionsResponse,
+    GetWalletBalanceResponse,
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
 import { WALLET_RPC_GENERIC_ERROR_CODE } from './constants';
@@ -29,6 +30,7 @@ import { initializeIonicSwapCompanionResponseSchema } from './types/responses/co
 import { CompanionAcceptIonicSwapParams } from './types/params/companion-requests/accept-ionic-swap';
 import { acceptIonicSwapCompanionResponseSchema } from './types/responses/companion-methods/accept-ionic-swap';
 import { getPermissionsCompanionResponseSchema } from './types/responses/companion-methods/get-permissions';
+import { getWalletBalanceCompanionResponseSchema } from './types/responses/companion-methods/get-wallet-balance';
 
 class ZanoWallet {
     private getZanoWallet = (): ZanoWindowObject => {
@@ -362,6 +364,39 @@ class ZanoWallet {
             data: {
                 permissions: companionResponse.data,
             },
+        };
+    }
+
+    getWalletBalance = async (): Promise<GetWalletBalanceResponse> => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_BALANCE');
+
+        const companionResponseParsingResult = getWalletBalanceCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
+            };
+        }
+
+        return {
+            success: true,
+            data: companionResponse.data.result,
         };
     }
 }
