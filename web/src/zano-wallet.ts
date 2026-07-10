@@ -10,6 +10,9 @@ import {
     InitializeIonicSwapResponse,
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
+import { WALLET_RPC_GENERIC_ERROR_CODE } from './constants';
+import { getWalletRPCErrorCode } from './constants/common';
+
 import { createAliasCompanionResponseSchema } from './types/responses/companion-methods/create-alias';
 import { getAddressByAliasCompanionResponseSchema } from './types/responses/companion-methods/get-address-by-alias';
 import { getWalletDataCompanionResponseSchema, GetWalletDataResponse } from './types/responses/companion-methods/get-wallet-data';
@@ -109,7 +112,14 @@ class ZanoWallet {
 
         const companionResponse = companionResponseParsingResult.data;
 
-        if (typeof companionResponse !== 'string') {
+        if (companionResponse === '') {
+            return {
+                success: false,
+                error: WALLET_RPC_GENERIC_ERROR_CODE,
+            };
+        }
+
+        if ('error' in companionResponse) {
             return {
                 success: false,
                 error: companionResponse.error,
@@ -144,8 +154,18 @@ class ZanoWallet {
             };
         }
 
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
+            };
+        }
+
         return {
             success: true,
+            data: {
+                tx_id: companionResponse.data.result.tx_id,
+            },
         };
     }
 
@@ -168,6 +188,13 @@ class ZanoWallet {
             return {
                 success: false,
                 error: companionResponse.error,
+            };
+        }
+
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
             };
         }
 
@@ -252,6 +279,13 @@ class ZanoWallet {
             return {
                 success: false,
                 error: companionResponse.error,
+            };
+        }
+
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
             };
         }
 
