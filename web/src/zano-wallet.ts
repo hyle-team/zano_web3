@@ -15,7 +15,9 @@ import {
     TransferResponse,
     GetIonicSwapProposalInfoResponse,
     GetWhitelistResponse,
-    AddWhitelistAssetResponse
+    AddWhitelistAssetResponse,
+    BurnAssetParams,
+    BurnAssetResponse
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
 import { WALLET_RPC_GENERIC_ERROR_CODE, getWalletRPCErrorCode, getWalletRPCErrorCodeByStatus } from './constants';
@@ -42,6 +44,10 @@ import { getIonicSwapProposalInfoCompanionResponseSchema } from './types/respons
 import { getWhitelistCompanionResponseSchema } from './types/responses/companion-methods/get-whitelist';
 import { CompanionAddWhitelistAssetParams } from './types/params/companion-requests/add-whitelist-asset';
 import { addWhitelistAssetCompanionResponseSchema } from './types/responses/companion-methods/add-whitelist-asset';
+import { CompanionBurnAssetParams } from './types/params/companion-requests/burn-asset';
+import z from 'zod';
+import { NON_NEGATIVE_REAL_NUMBER_REGEX } from './constants/common';
+import { burnAssetCompanionResponseScheme } from './types/responses/companion-methods/burn-asset';
 
 class ZanoWallet {
     private getZanoWallet = (): ZanoWindowObject => {
@@ -607,6 +613,62 @@ class ZanoWallet {
             success: true,
             data: companionResponse.data.result.asset_descriptor,
         };
+    }
+
+    burnAsset = async (params: BurnAssetParams): Promise<BurnAssetResponse> => {
+        const burnAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(params.burnAmount);
+
+        if (!burnAmountValidationResult.success) {
+            throw new ZanoWebError({
+                message: 'Invalid "burnAmount" provided. "burnAmount" must be a valid, finite number greater than zero.',
+                code: 'INVALID_PARAMS',
+            }); 
+        }
+
+        const nativeAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).optional().safeParse(params.nativeAmount);
+
+        if (!nativeAmountValidationResult.success) {
+            throw new ZanoWebError({
+                message: 'Invalid "nativeAmountValidationResult" provided. "nativeAmountValidationResult" must be a valid, finite number greater than zero, or undefined.',
+                code: 'INVALID_PARAMS',
+            }); 
+        }
+
+        const companionRequestParams: CompanionBurnAssetParams = params;
+
+        const companionResponseRaw = await this.getZanoWallet().request('BURN_ASSET', companionRequestParams, null); 
+        const companionResponseParsingResult = burnAssetCompanionResponseScheme.safeParse(companionResponseRaw);
+
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
+            };
+        }
+
+        return {
+            success: true,
+            data: {
+                tx_id: companionResponse.data.result.tx_id,
+            }
+        }
     }
 }
 
