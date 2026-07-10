@@ -10,3 +10,4 @@ export { GetWalletBalanceResponse, GetWalletBalanceResponseBalance } from './get
 export { TransferResponse, TransferResponseInfo } from './transfer';
 export { GetIonicSwapProposalInfoResponse, GetIonicSwapProposalInfoResponseInfo } from './get-ionic-swap-info';
 export { GetWhitelistResponse, GetWhitelistResponseItem } from './get-whitelist';
+export { AddWhitelistAssetResponse, AddWhitelistAssetResponseAsset } from './add-whitelist-asset';

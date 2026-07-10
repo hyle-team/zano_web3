@@ -14,11 +14,11 @@ import {
     TransferParams,
     TransferResponse,
     GetIonicSwapProposalInfoResponse,
-    GetWhitelistResponse
+    GetWhitelistResponse,
+    AddWhitelistAssetResponse
 } from './types';
 import { ZanoWindowObject, ZanoWindow } from './types/special/zano-window';
-import { WALLET_RPC_GENERIC_ERROR_CODE } from './constants';
-import { getWalletRPCErrorCode } from './constants/common';
+import { WALLET_RPC_GENERIC_ERROR_CODE, getWalletRPCErrorCode, getWalletRPCErrorCodeByStatus } from './constants';
 
 import { createAliasCompanionResponseSchema } from './types/responses/companion-methods/create-alias';
 import { getAddressByAliasCompanionResponseSchema } from './types/responses/companion-methods/get-address-by-alias';
@@ -40,6 +40,8 @@ import { transferCompanionResponseSchema } from './types/responses/companion-met
 import { CompanionGetIonicSwapInfoParams } from './types/params/companion-requests/get-ionic-swap-info';
 import { getIonicSwapProposalInfoCompanionResponseSchema } from './types/responses/companion-methods/get-ionic-swap-info';
 import { getWhitelistCompanionResponseSchema } from './types/responses/companion-methods/get-whitelist';
+import { CompanionAddWhitelistAssetParams } from './types/params/companion-requests/add-whitelist-asset';
+import { addWhitelistAssetCompanionResponseSchema } from './types/responses/companion-methods/add-whitelist-asset';
 
 class ZanoWallet {
     private getZanoWallet = (): ZanoWindowObject => {
@@ -501,6 +503,55 @@ class ZanoWallet {
         return {
             success: true,
             data: companionResponse.data,
+        };
+    }
+
+    addWhitelistAsset = async (assetId: string): Promise<AddWhitelistAssetResponse> => {
+        const companionRequestParams: CompanionAddWhitelistAssetParams = { asset_id: assetId };
+
+        const companionResponseRaw = await this.getZanoWallet().request('ADD_WHITELIST_ASSET', companionRequestParams, null);
+        
+        const companionResponseParsingResult = addWhitelistAssetCompanionResponseSchema.safeParse(companionResponseRaw);
+        if (!companionResponseParsingResult.success) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        const companionResponse = companionResponseParsingResult.data;
+
+        if (!('data' in companionResponse)) {
+            return {
+                success: false,
+                error: companionResponse.error,
+            };
+        }
+
+        if ('error' in companionResponse.data) {
+            return {
+                success: false,
+                error: getWalletRPCErrorCode(companionResponse.data.error.code),
+            };
+        }
+
+        if (companionResponse.data.result.status !== 'OK') {
+            return {
+                success: false,
+                error: getWalletRPCErrorCodeByStatus(companionResponse.data.result.status),
+            };
+        }
+
+        if (!('asset_descriptor' in companionResponse.data.result)) {
+            throw new ZanoWebError({
+                message: 'Failed to parse companion response.',
+                code: 'INTERNAL_ERROR',
+            });
+        }
+
+        return {
+            success: true,
+            data: companionResponse.data.result.asset_descriptor,
         };
     }
 }
