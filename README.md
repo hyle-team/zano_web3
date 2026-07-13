@@ -41,7 +41,33 @@ import ZanoWallet from 'zano_web3/web';
 const zanoWallet = new ZanoWallet();
 ```
 
-# Server api (Wallet RPC, Daemon):
+### ZanoWallet Instance Usage:
+
+```typescript
+// ...
+
+let getWalletDataResult: GetWalletDataResponse;
+
+try {
+    getWalletDataResult = await zanoWallet.getWallet();
+} catch (error) {
+    if (error instanceof ZanoWebError && error.code === 'ZANO_WALLET_NOT_AVAILABLE') {
+        // Error handling
+    } else {
+        throw error;
+    }
+}
+
+if (!getWalletDataResult.success) {
+    // Error handling
+}
+
+const { data: walletData } = getWalletDataResult;
+
+// ...
+```
+
+# Server API (Wallet RPC, Daemon):
 
 #### Methods
 
