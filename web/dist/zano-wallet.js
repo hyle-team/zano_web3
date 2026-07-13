@@ -1,3 +1,4 @@
+import z from 'zod';
 import { ZanoWebError } from './types';
 import { WALLET_RPC_GENERIC_ERROR_CODE, getWalletRPCErrorCode, getWalletRPCErrorCodeByStatus } from './constants';
 import { createAliasCompanionResponseSchema } from './types/responses/companion-methods/create-alias';
@@ -13,7 +14,6 @@ import { transferCompanionResponseSchema } from './types/responses/companion-met
 import { getIonicSwapProposalInfoCompanionResponseSchema } from './types/responses/companion-methods/get-ionic-swap-info';
 import { getWhitelistCompanionResponseSchema } from './types/responses/companion-methods/get-whitelist';
 import { addWhitelistAssetCompanionResponseSchema } from './types/responses/companion-methods/add-whitelist-asset';
-import z from 'zod';
 import { NON_NEGATIVE_REAL_NUMBER_REGEX } from './constants/common';
 import { burnAssetCompanionResponseScheme } from './types/responses/companion-methods/burn-asset';
 class ZanoWallet {
@@ -27,13 +27,13 @@ class ZanoWallet {
         }
         return zanoWindow.zano;
     };
-    requestPermissions = async (permissions) => {
+    requestPermissions = async (permissions, { timeoutMs = null } = {}) => {
         const companionRequestParams = {
             permissions: permissions.map(permission => ({
                 type: permission.type,
             })),
         };
-        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_ACCESS', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_ACCESS', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = requestPermissionsCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -52,8 +52,8 @@ class ZanoWallet {
             success: true,
         };
     };
-    getWallet = async () => {
-        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_DATA', {}, null);
+    getWallet = async ({ timeoutMs = null } = {}) => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_DATA', {}, timeoutMs);
         const companionResponseParsingResult = getWalletDataCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -73,9 +73,9 @@ class ZanoWallet {
             data: companionResponse.data,
         };
     };
-    getAddressByAlias = async (alias) => {
+    getAddressByAlias = async (alias, { timeoutMs = null } = {}) => {
         const companionRequestParams = { alias };
-        const companionResponseRaw = await this.getZanoWallet().request('GET_ALIAS_DETAILS', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('GET_ALIAS_DETAILS', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = getAddressByAliasCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -101,9 +101,9 @@ class ZanoWallet {
             data: companionResponse,
         };
     };
-    createAlias = async (alias) => {
+    createAlias = async (alias, { timeoutMs = null } = {}) => {
         const companionRequestParams = { alias };
-        const companionResponseRaw = await this.getZanoWallet().request('CREATE_ALIAS', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('CREATE_ALIAS', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = createAliasCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -131,9 +131,9 @@ class ZanoWallet {
             },
         };
     };
-    requestMessageSign = async (message) => {
+    requestMessageSign = async (message, { timeoutMs = null } = {}) => {
         const companionRequestParams = { message };
-        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_MESSAGE_SIGN', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('REQUEST_MESSAGE_SIGN', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = requestMessageSignCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -159,7 +159,7 @@ class ZanoWallet {
             data: companionResponse.data.result,
         };
     };
-    initializeIonicSwap = async ({ destinationAssetID, destinationAssetAmount, currentAssetID, currentAssetAmount, destinationAddress }) => {
+    initializeIonicSwap = async ({ destinationAssetID, destinationAssetAmount, currentAssetID, currentAssetAmount, destinationAddress }, { timeoutMs = null } = {}) => {
         const destinationAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(destinationAssetAmount);
         const currentAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(currentAssetAmount);
         const areNumbersValid = destinationAmountValidationResult.success &&
@@ -177,7 +177,7 @@ class ZanoWallet {
             currentAssetAmount,
             destinationAddress
         };
-        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = initializeIonicSwapCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -203,9 +203,9 @@ class ZanoWallet {
             data: companionResponse.data.result.hex_raw_proposal,
         };
     };
-    acceptIonicSwap = async (hexRawProposal) => {
+    acceptIonicSwap = async (hexRawProposal, { timeoutMs = null } = {}) => {
         const companionRequestParams = { hex_raw_proposal: hexRawProposal };
-        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP_ACCEPT', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('IONIC_SWAP_ACCEPT', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = acceptIonicSwapCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -233,8 +233,8 @@ class ZanoWallet {
             },
         };
     };
-    getPermissions = async () => {
-        const companionResponseRaw = await this.getZanoWallet().request('GET_PERMISSIONS', {}, null);
+    getPermissions = async ({ timeoutMs = null } = {}) => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_PERMISSIONS', {}, timeoutMs);
         const companionResponseParsingResult = getPermissionsCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -256,8 +256,8 @@ class ZanoWallet {
             },
         };
     };
-    getWalletBalance = async () => {
-        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_BALANCE', {}, null);
+    getWalletBalance = async ({ timeoutMs = null } = {}) => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WALLET_BALANCE', {}, timeoutMs);
         const companionResponseParsingResult = getWalletBalanceCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -283,7 +283,7 @@ class ZanoWallet {
             data: companionResponse.data.result,
         };
     };
-    transfer = async (params) => {
+    transfer = async (params, { timeoutMs = null } = {}) => {
         // Validation of params
         if ('amount' in params) {
             const amountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(params.amount);
@@ -306,7 +306,7 @@ class ZanoWallet {
             }
         }
         const companionRequestParams = params;
-        const companionResponseRaw = await this.getZanoWallet().request('TRANSFER', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('TRANSFER', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = transferCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -332,9 +332,9 @@ class ZanoWallet {
             data: companionResponse.data.result,
         };
     };
-    getIonicSwapProposalInfo = async (hexRawProposal) => {
+    getIonicSwapProposalInfo = async (hexRawProposal, { timeoutMs = null } = {}) => {
         const companionRequestParams = { hex_raw_proposal: hexRawProposal };
-        const companionResponseRaw = await this.getZanoWallet().request('GET_IONIC_SWAP_PROPOSAL_INFO', companionRequestParams);
+        const companionResponseRaw = await this.getZanoWallet().request('GET_IONIC_SWAP_PROPOSAL_INFO', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = getIonicSwapProposalInfoCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -360,8 +360,8 @@ class ZanoWallet {
             data: companionResponse.data.result,
         };
     };
-    getWhitelist = async () => {
-        const companionResponseRaw = await this.getZanoWallet().request('GET_WHITELIST', {}, null);
+    getWhitelist = async ({ timeoutMs = null } = {}) => {
+        const companionResponseRaw = await this.getZanoWallet().request('GET_WHITELIST', {}, timeoutMs);
         const companionResponseParsingResult = getWhitelistCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -381,9 +381,9 @@ class ZanoWallet {
             data: companionResponse.data,
         };
     };
-    addWhitelistAsset = async (assetId) => {
+    addWhitelistAsset = async (assetId, { timeoutMs = null } = {}) => {
         const companionRequestParams = { asset_id: assetId };
-        const companionResponseRaw = await this.getZanoWallet().request('ADD_WHITELIST_ASSET', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('ADD_WHITELIST_ASSET', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = addWhitelistAssetCompanionResponseSchema.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({
@@ -421,7 +421,7 @@ class ZanoWallet {
             data: companionResponse.data.result.asset_descriptor,
         };
     };
-    burnAsset = async (params) => {
+    burnAsset = async (params, { timeoutMs = null } = {}) => {
         const burnAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).safeParse(params.burnAmount);
         if (!burnAmountValidationResult.success) {
             throw new ZanoWebError({
@@ -437,7 +437,7 @@ class ZanoWallet {
             });
         }
         const companionRequestParams = params;
-        const companionResponseRaw = await this.getZanoWallet().request('BURN_ASSET', companionRequestParams, null);
+        const companionResponseRaw = await this.getZanoWallet().request('BURN_ASSET', companionRequestParams, timeoutMs);
         const companionResponseParsingResult = burnAssetCompanionResponseScheme.safeParse(companionResponseRaw);
         if (!companionResponseParsingResult.success) {
             throw new ZanoWebError({

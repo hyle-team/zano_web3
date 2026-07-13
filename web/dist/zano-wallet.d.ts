@@ -2,19 +2,47 @@ import { RequestPermissionsResponse, GetAddressByAliasResponse, CreateAliasRespo
 import { GetWalletDataResponse } from './types/responses/companion-methods/get-wallet-data';
 declare class ZanoWallet {
     private getZanoWallet;
-    requestPermissions: (permissions: PermissionsParam) => Promise<RequestPermissionsResponse>;
-    getWallet: () => Promise<GetWalletDataResponse>;
-    getAddressByAlias: (alias: string) => Promise<GetAddressByAliasResponse>;
-    createAlias: (alias: string) => Promise<CreateAliasResponse>;
-    requestMessageSign: (message: string) => Promise<RequestMessageSignResponse>;
-    initializeIonicSwap: ({ destinationAssetID, destinationAssetAmount, currentAssetID, currentAssetAmount, destinationAddress }: InitializeIonicSwapParams) => Promise<InitializeIonicSwapResponse>;
-    acceptIonicSwap: (hexRawProposal: string) => Promise<AcceptIonicSwapResponse>;
-    getPermissions: () => Promise<GetPermissionsResponse>;
-    getWalletBalance: () => Promise<GetWalletBalanceResponse>;
-    transfer: (params: TransferParams) => Promise<TransferResponse>;
-    getIonicSwapProposalInfo: (hexRawProposal: string) => Promise<GetIonicSwapProposalInfoResponse>;
-    getWhitelist: () => Promise<GetWhitelistResponse>;
-    addWhitelistAsset: (assetId: string) => Promise<AddWhitelistAssetResponse>;
-    burnAsset: (params: BurnAssetParams) => Promise<BurnAssetResponse>;
+    requestPermissions: (permissions: PermissionsParam, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<RequestPermissionsResponse>;
+    getWallet: ({ timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<GetWalletDataResponse>;
+    getAddressByAlias: (alias: string, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<GetAddressByAliasResponse>;
+    createAlias: (alias: string, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<CreateAliasResponse>;
+    requestMessageSign: (message: string, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<RequestMessageSignResponse>;
+    initializeIonicSwap: ({ destinationAssetID, destinationAssetAmount, currentAssetID, currentAssetAmount, destinationAddress }: InitializeIonicSwapParams, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<InitializeIonicSwapResponse>;
+    acceptIonicSwap: (hexRawProposal: string, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<AcceptIonicSwapResponse>;
+    getPermissions: ({ timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<GetPermissionsResponse>;
+    getWalletBalance: ({ timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<GetWalletBalanceResponse>;
+    transfer: (params: TransferParams, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<TransferResponse>;
+    getIonicSwapProposalInfo: (hexRawProposal: string, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<GetIonicSwapProposalInfoResponse>;
+    getWhitelist: ({ timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<GetWhitelistResponse>;
+    addWhitelistAsset: (assetId: string, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<AddWhitelistAssetResponse>;
+    burnAsset: (params: BurnAssetParams, { timeoutMs }?: {
+        timeoutMs?: number | null;
+    }) => Promise<BurnAssetResponse>;
 }
 export default ZanoWallet;
