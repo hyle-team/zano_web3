@@ -38,7 +38,7 @@
   "dependencies": {
     "@noble/hashes": "^2.2.0",
     "@scure/base": "^2.2.0",
-    "axios": "^1.7.2",
+    "axios": "^1.18.1",
     "big.js": "^6.2.1",
     "decimal.js": "^10.4.3",
     "json-bigint": "^1.0.0",

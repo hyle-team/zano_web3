@@ -11,7 +11,7 @@ declare const getWalletBalanceCompanionResponseBalanceSchema: z.ZodObject<{
             hidden_supply: z.ZodCustom<boolean, boolean>;
             meta_info: z.ZodCustom<string, string>;
             owner: z.ZodCustom<string, string>;
-            owner_eth_pub_key: z.ZodCustom<string, string>;
+            owner_eth_pub_key: z.ZodCustom<string | undefined, string | undefined>;
             ticker: z.ZodString;
             total_max_supply: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>;
         }, z.core.$strip>;
@@ -39,7 +39,7 @@ export declare const getWalletBalanceCompanionResponseSchema: z.ZodUnion<readonl
                     hidden_supply: z.ZodCustom<boolean, boolean>;
                     meta_info: z.ZodCustom<string, string>;
                     owner: z.ZodCustom<string, string>;
-                    owner_eth_pub_key: z.ZodCustom<string, string>;
+                    owner_eth_pub_key: z.ZodCustom<string | undefined, string | undefined>;
                     ticker: z.ZodString;
                     total_max_supply: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>;
                 }, z.core.$strip>;

@@ -6,7 +6,7 @@ export type TransferParams = {
     assetId: string;
     destinations: {
         address: string;
-        amount: number;
+        amount: string;
     }[];
 };
 export type CompanionTransferParams = {
@@ -17,6 +17,6 @@ export type CompanionTransferParams = {
     assetId: string;
     destinations: {
         address: string;
-        amount: number;
+        amount: string;
     }[];
 };
