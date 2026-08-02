@@ -570,7 +570,7 @@ class ZanoWallet {
 
         if (!nativeAmountValidationResult.success) {
             throw new ZanoWebError({
-                message: 'Invalid "nativeAmountValidationResult" provided. "nativeAmountValidationResult" must be a valid, finite number greater than zero, or undefined.',
+                message: 'Invalid "nativeAmount" provided. "nativeAmount" must be a valid, finite number greater than zero, or undefined.',
                 code: 'INVALID_PARAMS',
             }); 
         }

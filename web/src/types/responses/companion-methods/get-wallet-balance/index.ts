@@ -12,7 +12,7 @@ const getWalletBalanceCompanionResponseBalanceSchema = z.object({
             hidden_supply: z.custom<boolean>(),
             meta_info: z.custom<string>(),
             owner: z.custom<string>(),
-            owner_eth_pub_key: z.custom<string>(),
+            owner_eth_pub_key: z.custom<string | undefined>(),
             ticker: z.string(),
             total_max_supply: z.union([z.string(), z.number()]),
         }),

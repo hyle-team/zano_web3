@@ -432,7 +432,7 @@ class ZanoWallet {
         const nativeAmountValidationResult = z.string().regex(NON_NEGATIVE_REAL_NUMBER_REGEX).optional().safeParse(params.nativeAmount);
         if (!nativeAmountValidationResult.success) {
             throw new ZanoWebError({
-                message: 'Invalid "nativeAmountValidationResult" provided. "nativeAmountValidationResult" must be a valid, finite number greater than zero, or undefined.',
+                message: 'Invalid "nativeAmount" provided. "nativeAmount" must be a valid, finite number greater than zero, or undefined.',
                 code: 'INVALID_PARAMS',
             });
         }

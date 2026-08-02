@@ -1,6 +1,6 @@
 import z from "zod";
 declare const addWhitelistAssetCompanionResponseAssetSchema: z.ZodObject<{
-    current_supply: z.ZodNumber;
+    current_supply: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>;
     decimal_point: z.ZodNumber;
     full_name: z.ZodString;
     hidden_supply: z.ZodBoolean;
@@ -8,14 +8,14 @@ declare const addWhitelistAssetCompanionResponseAssetSchema: z.ZodObject<{
     owner: z.ZodString;
     owner_eth_pub_key: z.ZodString;
     ticker: z.ZodString;
-    total_max_supply: z.ZodNumber;
+    total_max_supply: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>;
 }, z.core.$strip>;
 export type AddWhitelistAssetResponseAsset = z.infer<typeof addWhitelistAssetCompanionResponseAssetSchema>;
 export declare const addWhitelistAssetCompanionResponseSchema: z.ZodUnion<readonly [z.ZodObject<{
     data: z.ZodUnion<readonly [z.ZodObject<{
         result: z.ZodUnion<readonly [z.ZodObject<{
             asset_descriptor: z.ZodObject<{
-                current_supply: z.ZodNumber;
+                current_supply: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>;
                 decimal_point: z.ZodNumber;
                 full_name: z.ZodString;
                 hidden_supply: z.ZodBoolean;
@@ -23,7 +23,7 @@ export declare const addWhitelistAssetCompanionResponseSchema: z.ZodUnion<readon
                 owner: z.ZodString;
                 owner_eth_pub_key: z.ZodString;
                 ticker: z.ZodString;
-                total_max_supply: z.ZodNumber;
+                total_max_supply: z.ZodUnion<readonly [z.ZodString, z.ZodNumber]>;
             }, z.core.$strip>;
             status: z.ZodLiteral<"OK">;
         }, z.core.$strip>, z.ZodObject<{
