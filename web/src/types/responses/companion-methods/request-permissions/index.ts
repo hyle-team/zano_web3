@@ -1,11 +1,18 @@
 import z from 'zod';
 
-export const requestPermissionsCompanionResponseSchema = z.union([
+const requestPermissionsCompanionResponsePayloadSchema = z.union([
     z.object({
         success: z.literal(true),
     }),
     z.object({
         error: z.string(),
+    })
+]);
+
+export const requestPermissionsCompanionResponseSchema = z.union([
+    requestPermissionsCompanionResponsePayloadSchema,
+    z.object({
+        data: requestPermissionsCompanionResponsePayloadSchema,
     })
 ]);
 

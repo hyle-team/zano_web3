@@ -81,7 +81,11 @@ class ZanoWallet {
             });
         }
 
-        const companionResponse = companionResponseParsingResult.data;
+        const parsedCompanionResponse = companionResponseParsingResult.data;
+
+        const companionResponse = 'data' in parsedCompanionResponse
+            ? parsedCompanionResponse.data
+            : parsedCompanionResponse;
 
         if (!('success' in companionResponse)) {
             return {
