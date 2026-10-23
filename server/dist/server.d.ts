@@ -23,10 +23,20 @@ declare class ServerWallet {
     private generateAccessToken;
     fetchDaemon(method: string, params: any, { disableLargeNumbersTransformation, }?: {
         disableLargeNumbersTransformation?: boolean;
-    }): Promise<import("axios").AxiosResponse<any, any, {}>>;
+    }): Promise<import("axios").AxiosResponse<any, {
+        jsonrpc: string;
+        id: number;
+        method: string;
+        params: any;
+    }, {}, any>>;
     fetchWallet(method: string, params: any, { disableLargeNumbersTransformation, }?: {
         disableLargeNumbersTransformation?: boolean;
-    }): Promise<import("axios").AxiosResponse<any, any, {}>>;
+    }): Promise<import("axios").AxiosResponse<any, {
+        jsonrpc: string;
+        id: number;
+        method: string;
+        params: any;
+    }, {}, any>>;
     updateWalletRpcUrl(rpcUrl: string): Promise<void>;
     updateDaemonRpcUrl(rpcUrl: string): Promise<void>;
     getAssetsList(): Promise<APIAsset[]>;

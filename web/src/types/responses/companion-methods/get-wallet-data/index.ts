@@ -1,5 +1,16 @@
 import z from "zod";
 
+const getWalletDataCompanionResponseWalletSubtransfersGroupSchema = z.object({
+    paymentId: z.string(),
+    subtransfers: z.array(z.object({
+        amount: z.string(),
+        assetId: z.string(),
+        incoming: z.boolean(),
+    })),
+});
+
+export type GetWalletDataResponseSubtransfersGroup = z.infer<typeof getWalletDataCompanionResponseWalletSubtransfersGroupSchema>;
+
 const getWalletDataCompanionResponseWalletSchema = z.object({
     address: z.string(),
     alias: z.string(),
@@ -27,6 +38,7 @@ const getWalletDataCompanionResponseWalletSchema = z.object({
             assetId: z.string(),
             incoming: z.boolean(),
         })),
+        subtransfersByPid: z.array(getWalletDataCompanionResponseWalletSubtransfersGroupSchema)
     })).optional(),
 });
 

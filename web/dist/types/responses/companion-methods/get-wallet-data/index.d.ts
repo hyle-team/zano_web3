@@ -1,4 +1,13 @@
 import z from "zod";
+declare const getWalletDataCompanionResponseWalletSubtransfersGroupSchema: z.ZodObject<{
+    paymentId: z.ZodString;
+    subtransfers: z.ZodArray<z.ZodObject<{
+        amount: z.ZodString;
+        assetId: z.ZodString;
+        incoming: z.ZodBoolean;
+    }, z.core.$strip>>;
+}, z.core.$strip>;
+export type GetWalletDataResponseSubtransfersGroup = z.infer<typeof getWalletDataCompanionResponseWalletSubtransfersGroupSchema>;
 declare const getWalletDataCompanionResponseWalletSchema: z.ZodObject<{
     address: z.ZodString;
     alias: z.ZodString;
@@ -25,6 +34,14 @@ declare const getWalletDataCompanionResponseWalletSchema: z.ZodObject<{
             amount: z.ZodString;
             assetId: z.ZodString;
             incoming: z.ZodBoolean;
+        }, z.core.$strip>>;
+        subtransfersByPid: z.ZodArray<z.ZodObject<{
+            paymentId: z.ZodString;
+            subtransfers: z.ZodArray<z.ZodObject<{
+                amount: z.ZodString;
+                assetId: z.ZodString;
+                incoming: z.ZodBoolean;
+            }, z.core.$strip>>;
         }, z.core.$strip>>;
     }, z.core.$strip>>>;
 }, z.core.$strip>;
@@ -56,6 +73,14 @@ export declare const getWalletDataCompanionResponseSchema: z.ZodUnion<readonly [
                 amount: z.ZodString;
                 assetId: z.ZodString;
                 incoming: z.ZodBoolean;
+            }, z.core.$strip>>;
+            subtransfersByPid: z.ZodArray<z.ZodObject<{
+                paymentId: z.ZodString;
+                subtransfers: z.ZodArray<z.ZodObject<{
+                    amount: z.ZodString;
+                    assetId: z.ZodString;
+                    incoming: z.ZodBoolean;
+                }, z.core.$strip>>;
             }, z.core.$strip>>;
         }, z.core.$strip>>>;
     }, z.core.$strip>;
